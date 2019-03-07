@@ -1272,7 +1272,7 @@ class Viewer(object):
             # ---------- boss 1 -------------------#
             if self.b1 == 1:
                 Boss1(pos = pygame.math.Vector2(Viewer.width // 2, 250))
-                pygame.mixer.music.load(os.path.join("data", "stargame_bossbattle1.wav"))
+                pygame.mixer.music.load(os.path.join("data", "stargame_bossbattle1.ogg"))
                 pygame.mixer.music.play()
                 self.b1 += 1
             
