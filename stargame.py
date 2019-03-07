@@ -589,6 +589,7 @@ class Enemy3(Enemy1):
     
      def kill(self):
          Explosion(posvector = self.pos, red = 205,blue= 0,green= 0,red_delta= 50,blue_delta=0,maxsparks=200)
+         #Viewer.explosionsound.play()
          VectorSprite.kill(self)
         
 class Boss1(VectorSprite):
@@ -1011,6 +1012,7 @@ class Viewer(object):
     def __init__(self, width=640, height=400, fps=60):
         """Initialize pygame, window, background, font,...
            default arguments """
+        pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.init()
         Viewer.width = width    # make global readable
         Viewer.height = height
@@ -1040,6 +1042,7 @@ class Viewer(object):
         self.joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
         for j in self.joysticks:
             j.init()
+        self.prepare_sounds()
         self.prepare_sprites()
         self.loadbackground()
         self.level = 0
@@ -1083,7 +1086,11 @@ class Viewer(object):
         self.background.convert()
         
     
-    #def load_songs(self):
+    def prepare_sounds(self):
+        # music
+        pygame.mixer.music.load(os.path.join("data", "stargame_bossbattle1.ogg"))
+        # sound effects
+        #Viewer.explosionsound = pygame.mixer.Sound(os.path.join("data", "stargame_Explosion.wav"))
         
     
     def load_sprites(self):
@@ -1183,7 +1190,7 @@ class Viewer(object):
         Flytext.groups = self.allgroup
         Explosion.groups= self.allgroup, self.explosiongroup
         Muzzle_flash.groups= self.allgroup
-        Boss1.groups = self.allgroup, self.bossgroup
+        Boss1.groups = self.allgroup, self.bossgroup , self.enemygroup
         Enemy1.groups = self.allgroup, self.enemygroup
         PowerUp.groups = self.allgroup, self.powerupgroup
         Shield.groups = self.allgroup ,self.shieldgroup
@@ -1272,7 +1279,7 @@ class Viewer(object):
             # ---------- boss 1 -------------------#
             if self.b1 == 1:
                 Boss1(pos = pygame.math.Vector2(Viewer.width // 2, 250))
-                pygame.mixer.music.load(os.path.join("data", "stargame_bossbattle1.ogg"))
+                #pygame.mixer.music.load(os.path.join("data", "stargame_bossbattle1.ogg"))
                 pygame.mixer.music.play()
                 self.b1 += 1
             
@@ -1448,32 +1455,50 @@ class Viewer(object):
                 crashgroup = pygame.sprite.spritecollide(s, self.evilrocketgroup,
                              False, pygame.sprite.collide_mask)
                 for r in crashgroup:
-                     r.kill
-                     Rocket(pos=r.pos, move= r.move * -1, angle=r.angle,
+                     # normalvector: from middle of shield to evilrocket
+                     nv = r.pos - s.pos   
+                     m = r.move.reflect(nv)  # anstatt move = r.move * -1
+                     a = pygame.math.Vector2(1,0).angle_to(m)
+                     Rocket(pos=r.pos, move= m, angle= a,
                             kill_on_edge = True, color= (0,255,0), max_age=10)
-            
+                     r.kill()
             # ------- collision detection between Laser and Enemy-------
             for l in self.lasergroup:
                 crashgroup = pygame.sprite.spritecollide(l, self.enemygroup,
                              False, pygame.sprite.collide_mask)
                 for e in crashgroup:
-                     e.hitpoints -= 10
-                     Explosion(posvector = e.pos,red = 100,minsparks = 1,maxsparks = 2)
-                     if e.hitpoints <= 0:
-                         self.killcounter(e)
+                     if e.__class__.__name__ != "Boss1":
+                         Explosion(posvector = e.pos,red = 100,minsparks = 1,maxsparks = 2)
+                         e.hitpoints -= 10
+                         if e.hitpoints <= 0:
+                             self.killcounter(e)
+                     else:
+                         # --- it's a boss1 ! ------
+                         if e.pos.y > 0:
+                             break
+                         playerpos = VectorSprite.numbers[l.bossnumber].pos
+                         iv = (playerpos - e.pos)
+                         iv.normalize_ip()
+                         iv *= 200
+                         iv += e.pos
+                         Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2)
+                         e.hitpoints -= 5
+                         if e.hitpoints <= 0:
+                             pygame.mixer.music.stop()
+                             self.killcounter(e)
                 
            # -------- collision detection between Laser and Boss1 -----------#
-            for l in self.lasergroup:
-                crashgroup = pygame.sprite.spritecollide(l, self.bossgroup,
-                             False, pygame.sprite.collide_mask)
-                for b in crashgroup:
-                    if b.pos.y > 0:
-                        break
-                    b.hitpoints -= 5
-                    Explosion(posvector = e.pos,red = 100,minsparks = 1,maxsparks = 2)
-                    if b.hitpoints <= 0:
-                        pygame.mixer.music.stop()
-                        self.killcounter(b)
+           # for l in self.lasergroup:
+           #     crashgroup = pygame.sprite.spritecollide(l, self.bossgroup,
+           #                  False, pygame.sprite.collide_mask)
+           #     for b in crashgroup:
+           #         if b.pos.y > 0:
+           #             break
+           #         b.hitpoints -= 5
+           #         Explosion(posvector = e.pos,red = 100,minsparks = 1,maxsparks = 2)
+           #         if b.hitpoints <= 0:
+           #             pygame.mixer.music.stop()
+           #             self.killcounter(b)
                           
             # ------- collision detection between Laser and Evilrocket-------#
             for l in self.lasergroup:
@@ -1486,34 +1511,46 @@ class Viewer(object):
                 crashgroup = pygame.sprite.spritecollide(e, self.rocketgroup,
                              False, pygame.sprite.collide_mask)
                 for r in crashgroup:
-                    e.hitpoints -= random.randint(4,9)
-                    if e.hitpoints <= 0:
-                        self.player1.hitpoints += 15
-                        self.player2.hitpoints += 15
-                        self.killcounter(e)
-                    if self.player1.hitpoints > 200:
-                        self.player1.hitpoints = 200
-                    if self.player2.hitpoints > 200:
-                        self.player2.hitpoints = 200    
-                    Explosion(pygame.math.Vector2(r.pos.x, r.pos.y),red=0,green=150,blue=0)
-                    r.kill()
-            
-            # ----- collision detection between boss and rocket -----
-            for b in self.bossgroup:
-                crashgroup = pygame.sprite.spritecollide(b, self.rocketgroup,
-                             False, pygame.sprite.collide_mask)
-                for r in crashgroup:
-                    if b.pos.y > 0:
-                        break
-                        b.hitpoints -= random.randint(10,20)
+                    if e.__class__.__name__ != "Boss1":
+                        e.hitpoints -= random.randint(4,9)
+                        if e.hitpoints <= 0:
+                            self.player1.hitpoints += 15
+                            self.player2.hitpoints += 15
+                            self.killcounter(e)
+                        if self.player1.hitpoints > 200:
+                            self.player1.hitpoints = 200
+                        if self.player2.hitpoints > 200:
+                            self.player2.hitpoints = 200    
                         Explosion(pygame.math.Vector2(r.pos.x, r.pos.y),red=0,green=150,blue=0)
-                        if b.hitpoints <= 0:
-                            pygame.mixer.music.stop()
-                            Explosion(pygame.math.Vector2(b.pos.x, b.pos.y),minsparks = 100, maxsparks = 1000,red=0,green=150,blue=0)
-                            self.player1.hitpoints += 300
-                            self.player2.hitpoints += 300
-                            self.killcounter(b)
-                    r.kill()
+                        r.kill()
+                    else:
+                        # --- it's a boss1 ! ------
+                        if e.pos.y > 0:
+                             break
+                        Explosion(posvector = r.pos,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2)
+                        e.hitpoints -= 5
+                        if e.hitpoints <= 0:
+                             pygame.mixer.music.stop()
+                             self.killcounter(e)
+                        r.kill()
+            
+                
+            # ----- collision detection between boss and rocket -----
+            #for b in self.bossgroup:
+            #    crashgroup = pygame.sprite.spritecollide(b, self.rocketgroup,
+            #                 False, pygame.sprite.collide_mask)
+            #    for r in crashgroup:
+            #        if b.pos.y > 0:
+            #            break
+            #            b.hitpoints -= random.randint(10,20)
+            #            Explosion(pygame.math.Vector2(r.pos.x, r.pos.y),red=0,green=150,blue=0)
+             #           if b.hitpoints <= 0:
+             #               pygame.mixer.music.stop()
+              #              Explosion(pygame.math.Vector2(b.pos.x, b.pos.y),minsparks = 100, maxsparks = 1000,red=0,green=150,blue=0)
+               #             self.player1.hitpoints += 300
+                #            self.player2.hitpoints += 300
+                 #           self.killcounter(b)
+                  #  r.kill()
                         
             # -------------- UPDATE all sprites -------             
             self.allgroup.update(seconds)
