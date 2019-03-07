@@ -1319,9 +1319,13 @@ class Viewer(object):
                 if age > self.player2.age:
                     self.player2.old_laser = True
                     if pressed_keys[pygame.K_j]:
-                        self.player2.turn_left()
+                        self.player2.strafe_left()
                     if pressed_keys[pygame.K_l]:
-                        self.player2.turn_right()
+                        self.player2.strafe_right()
+                    if pressed_keys[pygame.K_k]:
+                        self.player2.move_backward()
+                    if pressed_keys[pygame.K_i]:
+                        self.player2.move_forward()
                     break
             else:
                 # no laser
