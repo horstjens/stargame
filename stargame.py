@@ -597,7 +597,7 @@ class Boss1(VectorSprite):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.hitpoints = 1000
+        self.hitpoints = 10000
         
         
     def create_image(self):
@@ -1477,10 +1477,16 @@ class Viewer(object):
                          if e.pos.y > 0:
                              break
                          playerpos = VectorSprite.numbers[l.bossnumber].pos
-                         iv = (playerpos - e.pos)
-                         iv.normalize_ip()
-                         iv *= 200
-                         iv += e.pos
+                         #iv = (playerpos - e.pos)
+                         #iv.normalize_ip()
+                         #iv *= 200
+                         #iv += e.pos
+                         iv = pygame.math.Vector2(playerpos.x, e.pos.y)
+                         a2 = (playerpos.x - e.pos.x)**2
+                         c2 = 200**2
+                         b = (c2-a2)**0.5
+                         #print("a2,c2,b:",a2, c2, b)
+                         iv += pygame.math.Vector2(0,-b)
                          Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2)
                          e.hitpoints -= 5
                          if e.hitpoints <= 0:
