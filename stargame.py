@@ -1012,6 +1012,12 @@ class Viewer(object):
     width = 0
     height = 0
     images = {}
+    menu = []
+    mainmenu = [ "play", "settings", "credits", "quit" ]
+    settingsmenu = ["back", "video", "audio", "difficulty"]
+    difficultymenu = ["back", "powerups", "bosshealth", "playerhelth"]
+    oldmenu = ""
+    cursor = 0
 
     def __init__(self, width=640, height=400, fps=60):
         """Initialize pygame, window, background, font,...
@@ -1051,6 +1057,7 @@ class Viewer(object):
         self.loadbackground()
         self.level = 0
         self.new_level()
+        Viewer.menu = Viewer.mainmenu[:]
     
     def killcounter(self, victim):
         name = victim.__class__.__name__
@@ -1184,6 +1191,7 @@ class Viewer(object):
         self.powerupgroup = pygame.sprite.Group()
         self.shieldgroup = pygame.sprite.Group()
         self.lasergroup = pygame.sprite.Group()
+        self.flytextgroup = pygame.sprite.Group()
 
         Mouse.groups = self.allgroup, self.mousegroup, self.tailgroup
         VectorSprite.groups = self.allgroup
@@ -1191,7 +1199,7 @@ class Viewer(object):
         Rocket.groups = self.allgroup, self.rocketgroup
         Bossrocket.groups = self.allgroup, self.bossrocketgroup
         Evilrocket.groups = self.allgroup, self.evilrocketgroup
-        Flytext.groups = self.allgroup
+        Flytext.groups = self.allgroup, self.flytextgroup
         Explosion.groups= self.allgroup, self.explosiongroup
         Muzzle_flash.groups= self.allgroup
         Boss1.groups = self.allgroup, self.bossgroup , self.enemygroup
@@ -1206,6 +1214,63 @@ class Viewer(object):
         Engine_glow(bossnumber = self.player1.number, sticky_with_boss=True, angle = self.player1.angle+180)
         
    
+   
+    def menurun(self):
+        running = True
+        pygame.mouse.set_visible(False)
+        while running:
+          
+            milliseconds = self.clock.tick(self.fps) #
+            seconds = milliseconds / 1000
+          
+            # -------- events ------
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return -1 # running = False
+                # ------- pressed and released key ------
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return -1 # running = False
+                    if event.key == pygame.K_UP:
+                        Viewer.cursor -= 1
+                    if event.key == pygame.K_DOWN:
+                        Viewer.cursor += 1
+                    if event.key == pygame.K_RETURN:
+                        text = Viewer.menu[Viewer.cursor]
+                        if text == "quit":
+                            return -1
+                        if text == "play":
+                            return
+                        if text == "settings":
+                            Viewer.menu = Viewer.settingsmenu[:]
+                        if text == "back":
+                            Viewer.menu = Viewer.mainmenu[:]
+                        if text == "credits":
+                            Flytext(400, 400, "by Mohamed and Abdulla")
+                            
+   
+            # ------delete everything on screen-------
+            self.screen.blit(self.background, (0, 0))
+            
+            # --- paint menu ----
+            for y, item in enumerate(Viewer.menu):
+                write(self.screen, item, 200, 100+y*20, color=(255,255,255))
+            # --- cursor ---
+            write(self.screen, "-->", 100, 100+ Viewer.cursor * 20, color=(255,255,255))
+                        
+            # -------------- UPDATE all sprites -------             
+            self.flytextgroup.update(seconds)
+
+            # ----------- clear, draw , update, flip -----------------
+            self.allgroup.draw(self.screen)
+
+            
+           
+                
+            # -------- next frame -------------
+            pygame.display.flip()
+        #----------------------------------------------------- 
+
     def run(self):
         """The mainloop"""
         running = True
@@ -1232,7 +1297,8 @@ class Viewer(object):
                 # ------- pressed and released key ------
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        running = False
+                        if self.menurun() == -1:
+                            running = False
                     if event.key == pygame.K_x:
                         Ufo(pos=pygame.math.Vector2(100,-100))
                     # ------- change Background image ----
