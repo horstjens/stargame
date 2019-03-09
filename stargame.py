@@ -598,17 +598,22 @@ class Boss1(VectorSprite):
         self.kill_on_edge = False
         self.survive_north = True
         self.hitpoints = 10000
-        
+        self.hitpointsfull = 10000
+        self.speeds = [70,80,90,100,120,140,160,180,200,220]
         
     def create_image(self):
         self.image = Viewer.images["Boss1"]
         self.image0 = self.image.copy()
         self.rect = self.image.get_rect()
 
-    
+    def kill(self):
+        Explosion(posvector=self.pos, red=200, red_delta=25, minsparks=500, maxsparks=600, maxlifetime=7)
+        VectorSprite.kill(self)
         
     def update(self,seconds):
         VectorSprite.update(self,seconds)
+        self.damage = 1- self.hitpoints / self.hitpointsfull
+        print("bossdamage:", self.damage)
         if self.pos.y > 0:
             self.image = Viewer.images["Boss_immortal"]
         else:
@@ -645,7 +650,9 @@ class Boss1(VectorSprite):
             for d in cannons:   
                 diffvector = t.pos  - (self.pos + d)
                 a = rightvector.angle_to(diffvector)
-                speeds = [100,120,140,160,180,200,220,240]
+                #speeds = [100,120,140,160,180,200,220,240]
+                da = int(round(self.damage * 10,0))
+                speeds = self.speeds[:da+1]
                 for speed in speeds:
                     v = pygame.math.Vector2(speed, 0)
                     v.rotate_ip(a)
@@ -1299,8 +1306,6 @@ class Viewer(object):
                     if event.key == pygame.K_ESCAPE:
                         if self.menurun() == -1:
                             running = False
-                    if event.key == pygame.K_x:
-                        Ufo(pos=pygame.math.Vector2(100,-100))
                     # ------- change Background image ----
                     if event.key == pygame.K_b:
                         self.loadbackground()
@@ -1547,21 +1552,24 @@ class Viewer(object):
                          if e.pos.y > 0:
                              break
                          playerpos = VectorSprite.numbers[l.bossnumber].pos
-                         #iv = (playerpos - e.pos)
-                         #iv.normalize_ip()
-                         #iv *= 200
-                         #iv += e.pos
                          iv = pygame.math.Vector2(playerpos.x, e.pos.y)
                          a2 = (playerpos.x - e.pos.x)**2
-                         c2 = 200**2
+                         c2 = 180**2
                          b = (c2-a2)**0.5
-                         #print("a2,c2,b:",a2, c2, b)
-                         iv += pygame.math.Vector2(0,-b)
-                         Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2)
-                         e.hitpoints -= 5
-                         if e.hitpoints <= 0:
-                             pygame.mixer.music.stop()
-                             self.killcounter(e)
+                         print("b:",b)
+                         error = False
+                         try:
+                             iv += pygame.math.Vector2(0,-b)
+                         except:
+                             print("au weia!!! aaa unable for bossrocket because of b:",b)
+                             error = True
+                         if not error:
+                             Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2, minangle=190, maxangle=350  )
+                             e.hitpoints -= 5
+                             if e.hitpoints <= 0:
+                                pygame.mixer.music.stop()
+                                self.killcounter(e)
+                        #error = False
                 
             # ------   collision detection between player and enemy
             for p in self.playergroup:
@@ -1573,20 +1581,7 @@ class Viewer(object):
                     p.hitpoints -= 10
                     
                     
-                    
-           # -------- collision detection between Laser and Boss1 -----------#
-           # for l in self.lasergroup:
-           #     crashgroup = pygame.sprite.spritecollide(l, self.bossgroup,
-           #                  False, pygame.sprite.collide_mask)
-           #     for b in crashgroup:
-           #         if b.pos.y > 0:
-           #             break
-           #         b.hitpoints -= 5
-           #         Explosion(posvector = e.pos,red = 100,minsparks = 1,maxsparks = 2)
-           #         if b.hitpoints <= 0:
-           #             pygame.mixer.music.stop()
-           #             self.killcounter(b)
-                          
+    
             # ------- collision detection between Laser and Evilrocket-------#
             for l in self.lasergroup:
                 crashgroup = pygame.sprite.spritecollide(l, self.evilrocketgroup,
@@ -1622,22 +1617,7 @@ class Viewer(object):
                         r.kill()
             
                 
-            # ----- collision detection between boss and rocket -----
-            #for b in self.bossgroup:
-            #    crashgroup = pygame.sprite.spritecollide(b, self.rocketgroup,
-            #                 False, pygame.sprite.collide_mask)
-            #    for r in crashgroup:
-            #        if b.pos.y > 0:
-            #            break
-            #            b.hitpoints -= random.randint(10,20)
-            #            Explosion(pygame.math.Vector2(r.pos.x, r.pos.y),red=0,green=150,blue=0)
-             #           if b.hitpoints <= 0:
-             #               pygame.mixer.music.stop()
-              #              Explosion(pygame.math.Vector2(b.pos.x, b.pos.y),minsparks = 100, maxsparks = 1000,red=0,green=150,blue=0)
-               #             self.player1.hitpoints += 300
-                #            self.player2.hitpoints += 300
-                 #           self.killcounter(b)
-                  #  r.kill()
+       
                         
             # -------------- UPDATE all sprites -------             
             self.allgroup.update(seconds)
