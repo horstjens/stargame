@@ -831,7 +831,11 @@ class Player(VectorSprite):
         self.image.convert_alpha()
         self.image0 = self.image.copy()
         self.rect = self.image.get_rect()
-
+    
+    def kill(self):
+        Explosion(posvector=self.pos, red=128, blue=128, green=128, minsparks=400, maxsparks=500,
+                  red_delta=100, green_delta=100, blue_delta=100, maxlifetime=7) 
+        VectorSprite.kill(self) 
         
 class Laser(VectorSprite):
     
@@ -1493,6 +1497,17 @@ class Viewer(object):
                              pygame.mixer.music.stop()
                              self.killcounter(e)
                 
+            # ------   collision detection between player and enemy
+            for p in self.playergroup:
+                crashgroup = pygame.sprite.spritecollide(p,self.enemygroup,
+                             False, pygame.sprite.collide_mask)
+                             
+                for e in crashgroup:
+                    e.hitpoints -= 10 
+                    p.hitpoints -= 10
+                    
+                    
+                    
            # -------- collision detection between Laser and Boss1 -----------#
            # for l in self.lasergroup:
            #     crashgroup = pygame.sprite.spritecollide(l, self.bossgroup,
