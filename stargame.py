@@ -1037,6 +1037,15 @@ class Viewer(object):
     healingeffectivitymenu = ["back", "+25", "+50", "+100", "full health"]
     durationmenu = ["back", "5 seconds", "10 seconds", "20 seconds", "30 seconds", "1 minute"]
     laserdamagemenu = ["back", "180 dps", "300 dps", "600 dps"]
+    videomenu = ["back", "resolution", "fullscreen", "fpslock"]
+    resolutuinmenu = ["back", "480p", "720p", "1080p", "1440p", "4k"]
+    fullscreenmenu = ["back", "true", "false"]
+    fpslockmenu = ["back", "30fps", "60fps", "90fps", "120fps", "144fps"]
+    playerhealthmenu = ["back", "50", "100", "150", "200", "250", "300", "500", "1000"]
+    bosshealthmenu = ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9001", "10000", "20000"]
+    audiomenu = ["back", "volume", "soundeffects"]
+    volumemenu = ["back", "low", "medium", "high"]
+    soundeffectsmenu = ["back", "on", "off"]
     oldmenu = ""
     cursor = 0
 
