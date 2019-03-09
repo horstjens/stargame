@@ -1236,7 +1236,7 @@ class Viewer(object):
         
    
    
-    def menurun(self):
+        def menurun(self):
         running = True
         pygame.mouse.set_visible(False)
         while running:
@@ -1260,15 +1260,50 @@ class Viewer(object):
                         text = Viewer.menu[Viewer.cursor]
                         if text == "quit":
                             return -1
-                        if text == "play":
+                        if text == "resume":
                             return
                         if text == "settings":
                             Viewer.menu = Viewer.settingsmenu[:]
+                            Viewer.oldmenu = "main"
+                        if text == "difficulty":
+                            Viewer.menu = Viewer.difficultymenu[:]
+                            Viewer.oldmenu = "settings"
+                        if text == "powerups":
+                            Viewer.menu = Viewer.powerupsmenu[:]
+                            Viewer.oldmenu = "difficulty"
+                        if text == "laser":
+                            Viewer.menu = Viewer.lasermenu[:]
+                            Viewer.oldmenu = "powerups"
+                        if text == "bonusrockets":
+                            Viewer.menu = Viewer.bonusrocketsmenu[:]
+                            Viewer.oldmenu = "powerups"
+                        if text == "bulletspeed":
+                            Viewer.menu = Viewer.bulletspeedmenu[:]
+                            Viewer.oldmenu = "powerups"
+                        if text == "shield":
+                            Viewer.menu = Viewer.shieldmenu[:]
+                            Viewer.oldmenu = "powerups"
+                        if text == "heal":
+                            Viewer.menu = Viewer.healmenu[:]
+                            Viewer.oldmenu = "powerups"      
+                        if text == "speed":
+                            Viewer.menu = Viewer.speedmenu[:]
+                            Viewer.oldmenu = "powerups"
                         if text == "back":
-                            Viewer.menu = Viewer.mainmenu[:]
+                            if Viewer.oldmenu == "powerups":
+                                Viewer.menu = Viewer.powerupsmenu[:]
+                                Viewer.oldmenu == "difficulty"
+                            elif Viewer.oldmenu == "difficulty":
+                                Viewer.menu = Viewer.difficultymenu[:]
+                                Viewer.oldmenu == "settings"
+                            elif Viewer.oldmenu == "main":
+                                Viewer.menu = Viewer.mainmenu[:]
+                                Viewer.oldmenu = ""
+                            elif Viewer.oldmenu == "settings":
+                                Viewer.menu = Viewer.settingsmenu[:]
+                                Viewer.oldmenu == "main"
                         if text == "credits":
-                            Flytext(400, 400, "by Mohamed and Abdulla")
-                            
+                            Flytext(700, 400, "by mobdullah", fontsize = 100)                            
    
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
