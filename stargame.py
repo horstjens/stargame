@@ -1236,7 +1236,7 @@ class Viewer(object):
         
    
    
-        def menurun(self):
+    def menurun(self):
         running = True
         pygame.mouse.set_visible(False)
         while running:
