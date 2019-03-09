@@ -1019,9 +1019,24 @@ class Viewer(object):
     height = 0
     images = {}
     menu = []
-    mainmenu = [ "play", "settings", "credits", "quit" ]
-    settingsmenu = ["back", "video", "audio", "difficulty"]
-    difficultymenu = ["back", "powerups", "bosshealth", "playerhelth"]
+    mainmenu = [ "resume", "settings", "credits", "quit" ]
+    settingsmenu = ["back", "video", "audio", "difficulty", "reset all values"]
+    difficultymenu = ["back", "powerups", "bosshealth", "playerhealth"]
+    powerupsmenu = ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"] 
+    lasermenu = ["back", "powerupappearance", "laserdamage", "duration"]
+    bonusrocketsmenu = ["back", "powerupappearance", "bonusrocketincrease", "duration"]
+    bulletspeedmenu = ["back", "powerupappearance", "bulletspeedincrease", "duration"]
+    healmenu = ["back", "powerupappearance", "healingeffectivity", "duration"]
+    shieldmenu = ["back", "powerupappearance", "bossrocket deflection", "duration"]
+    speedmenu = ["back", "powerupappearance", "speedincrease", "duration"]
+    bonusrocketincreasemenu = ["back", "+1", "+2", "+3", "+4","+5"]
+    bulletspeedincreasemenu = ["back", "+5", "+10", "+15"]
+    speedincreasemenu = ["back", "+1", "+3", "+5", "+7", "+10"]
+    powerupappearancemenu = ["back", "never", "seldom", "sometimes", "often"]
+    bossrocketdeflectionmenu = ["back", "true", "false"]
+    healingeffectivitymenu = ["back", "+25", "+50", "+100", "full health"]
+    durationmenu = ["back", "5 seconds", "10 seconds", "20 seconds", "30 seconds", "1 minute"]
+    laserdamagemenu = ["back", "180 dps", "300 dps", "600 dps"]
     oldmenu = ""
     cursor = 0
 
