@@ -1,10 +1,9 @@
 """
-author: Horst JENS
-email: horstjens@gmail.com
-contact: see http://spielend-programmieren.at/de:kontakt
+author: Mohamed und abdullah
+email: moha.alsaby@gmail.com 
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
 download: 
-idea: clean python3/pygame template using pygame.math.vector2
+ihttps://github.com/horstjens/stargame/edit/master/stargame.py
 
 """
 import pygame
