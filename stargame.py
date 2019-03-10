@@ -621,14 +621,15 @@ class Boss1(VectorSprite):
         if self.pos.y > -200:
             self.move = pygame.math.Vector2(0,-7.5)
         else:
-            x = 0
+            dx = 0
             if random.random() < 0.01:
-                x = random.choice((-7,-3,0,3,7))
-            if x < 200:
-                x = 7
-            if x > Viewer.width - 200:
-                x= -7
-            self.move = pygame.math.Vector2(x,0)
+                dx = random.choice((-7,-3,0,3,7))
+                self.move = pygame.math.Vector2(dx,0)
+        if self.pos.x < 200:
+            self.pos.x = 200
+        if self.pos.x > Viewer.width -200:
+            self.pos.x = Viewer.width -200
+            
             
         self.fire()
         
@@ -1018,11 +1019,16 @@ class Viewer(object):
     width = 0
     height = 0
     images = {}
+    # menu is a dict with {key: value, ...}
+    # the key must be unique
+    # the value must be a list
     menu = {"main":            ["resume", "settings", "credits", "quit" ],
             "settings":        ["back", "video", "audio", "difficulty", "reset all values"],
             "difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
             "powerups":        ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"],
             "video":           ["back", "resolution", "fullscreen", "fpslock"],
+            "audio":           ["back", "volume", "soundeffects"],
+            "volume":          ["back", "low", "medium", "high"],
             "bosshealth":      ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9000", "10000", "20000"],
             "playerhealth":    ["back", "50", "100", "150", "200", "250", "300", "500", "1000"],
             "laser":           ["back", "laser frequency", "laser damage", "laser duration"],
@@ -1097,7 +1103,12 @@ class Viewer(object):
         self.loadbackground()
         self.level = 0
         self.new_level()
-        #Viewer.menu = Viewer.mainmenu[:]
+        # ---- default values for game settings:
+        self.reset_settings()
+        
+    def reset_settings(self):
+        # powerups 
+        self.laserfrequency = "often"
     
     def killcounter(self, victim):
         name = victim.__class__.__name__
@@ -1295,6 +1306,11 @@ class Viewer(object):
                         # direct action
                         elif text == "credits":
                             Flytext(700, 400, "by mobdullah", fontsize = 100)  
+                        # settings
+                        elif Viewer.name == "laser frequency":
+                            # set this value
+                            self.laserfrequency = text
+                            Flytext(700,400, "laser frequency is now set to "+ text)
                         
                         
    
