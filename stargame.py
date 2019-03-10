@@ -1018,12 +1018,21 @@ class Viewer(object):
     width = 0
     height = 0
     images = {}
-    menu = []
-    mainmenu = [ "resume", "settings", "credits", "quit" ]
-    settingsmenu = ["back", "video", "audio", "difficulty", "reset all values"]
-    difficultymenu = ["back", "powerups", "bosshealth", "playerhealth"]
-    powerupsmenu = ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"] 
-    lasermenu = ["back", "powerupappearance", "laserdamage", "duration"]
+    menu = {"main":            ["resume", "settings", "credits", "quit" ],
+            "settings":        ["back", "video", "audio", "difficulty", "reset all values"],
+            "difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
+            "powerups":        ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"],
+            "video":           ["back", "resolution", "fullscreen", "fpslock"],
+            "bosshealth":      ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9000", "10000", "20000"],
+            "playerhealth":    ["back", "50", "100", "150", "200", "250", "300", "500", "1000"],
+            "laser":           ["back", "laser frequency", "laser damage", "laser duration"],
+            "laser frequency": ["back", "never", "seldom", "sometimes", "often"],
+            }
+    #mainmenu = [ "resume", "settings", "credits", "quit" ]
+    #settingsmenu = ["back", "video", "audio", "difficulty", "reset all values"]
+    #difficultymenu = ["back", ["powerups", "bosshealth", "playerhealth"]
+    #powerupsmenu = ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"] 
+    #lasermenu = ["back", "powerupappearance", "laserdamage", "duration"]
     bonusrocketsmenu = ["back", "powerupappearance", "bonusrocketincrease", "duration"]
     bulletspeedmenu = ["back", "powerupappearance", "bulletspeedincrease", "duration"]
     healmenu = ["back", "powerupappearance", "healingeffectivity", "duration"]
@@ -1037,17 +1046,18 @@ class Viewer(object):
     healingeffectivitymenu = ["back", "+25", "+50", "+100", "full health"]
     durationmenu = ["back", "5 seconds", "10 seconds", "20 seconds", "30 seconds", "1 minute"]
     laserdamagemenu = ["back", "180 dps", "300 dps", "600 dps"]
-    videomenu = ["back", "resolution", "fullscreen", "fpslock"]
+    #videomenu = ["back", "resolution", "fullscreen", "fpslock"]
     resolutuinmenu = ["back", "480p", "720p", "1080p", "1440p", "4k"]
     fullscreenmenu = ["back", "true", "false"]
     fpslockmenu = ["back", "30fps", "60fps", "90fps", "120fps", "144fps"]
-    playerhealthmenu = ["back", "50", "100", "150", "200", "250", "300", "500", "1000"]
-    bosshealthmenu = ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9001", "10000", "20000"]
-    audiomenu = ["back", "volume", "soundeffects"]
+    #playerhealthmenu = ["back", "50", "100", "150", "200", "250", "300", "500", "1000"]
+    #bosshealthmenu = ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9000", "10000", "20000"]
+    #audiomenu = ["back", "volume", "soundeffects"]
     volumemenu = ["back", "low", "medium", "high"]
     soundeffectsmenu = ["back", "on", "off"]
-    oldmenu = ""
+    history = ["main"]
     cursor = 0
+    name = "main"
 
     def __init__(self, width=640, height=400, fps=60):
         """Initialize pygame, window, background, font,...
@@ -1087,7 +1097,7 @@ class Viewer(object):
         self.loadbackground()
         self.level = 0
         self.new_level()
-        Viewer.menu = Viewer.mainmenu[:]
+        #Viewer.menu = Viewer.mainmenu[:]
     
     def killcounter(self, victim):
         name = victim.__class__.__name__
@@ -1263,72 +1273,61 @@ class Viewer(object):
                         return -1 # running = False
                     if event.key == pygame.K_UP:
                         Viewer.cursor -= 1
+                        Viewer.cursor = max(0, Viewer.cursor) # not < 0
                     if event.key == pygame.K_DOWN:
                         Viewer.cursor += 1
+                        Viewer.cursor = min(len(Viewer.menu[Viewer.name])-1,Viewer.cursor) # not > menu entries
                     if event.key == pygame.K_RETURN:
-                        text = Viewer.menu[Viewer.cursor]
+                        text = Viewer.menu[Viewer.name][Viewer.cursor]
                         if text == "quit":
                             return -1
-                        if text == "resume":
+                        elif text == "resume":
                             return
-                        if text == "settings":
-                            Viewer.menu = Viewer.settingsmenu[:]
-                            Viewer.oldmenu = "main"
-                        if text == "difficulty":
-                            Viewer.menu = Viewer.difficultymenu[:]
-                            Viewer.oldmenu = "settings"
-                        if text == "powerups":
-                            Viewer.menu = Viewer.powerupsmenu[:]
-                            Viewer.oldmenu = "difficulty"
-                        if text == "laser":
-                            Viewer.menu = Viewer.lasermenu[:]
-                            Viewer.oldmenu = "powerups"
-                        if text == "bonusrockets":
-                            Viewer.menu = Viewer.bonusrocketsmenu[:]
-                            Viewer.oldmenu = "powerups"
-                        if text == "bulletspeed":
-                            Viewer.menu = Viewer.bulletspeedmenu[:]
-                            Viewer.oldmenu = "powerups"
-                        if text == "shield":
-                            Viewer.menu = Viewer.shieldmenu[:]
-                            Viewer.oldmenu = "powerups"
-                        if text == "heal":
-                            Viewer.menu = Viewer.healmenu[:]
-                            Viewer.oldmenu = "powerups"      
-                        if text == "speed":
-                            Viewer.menu = Viewer.speedmenu[:]
-                            Viewer.oldmenu = "powerups"
-                        if text == "back":
-                            if Viewer.oldmenu == "powerups":
-                                Viewer.menu = Viewer.powerupsmenu[:]
-                                Viewer.oldmenu == "difficulty"
-                            elif Viewer.oldmenu == "difficulty":
-                                Viewer.menu = Viewer.difficultymenu[:]
-                                Viewer.oldmenu == "settings"
-                            elif Viewer.oldmenu == "main":
-                                Viewer.menu = Viewer.mainmenu[:]
-                                Viewer.oldmenu = ""
-                            elif Viewer.oldmenu == "settings":
-                                Viewer.menu = Viewer.settingsmenu[:]
-                                Viewer.oldmenu == "main"
-                        if text == "credits":
-                            Flytext(700, 400, "by mobdullah", fontsize = 100)                            
+                        elif text == "back":
+                            Viewer.history = Viewer.history[:-1] # remove last entry
+                            Viewer.cursor = 0
+                            Viewer.name = Viewer.history[-1] # get last entry
+                        elif text in Viewer.menu:
+                            # changing to another menu
+                            Viewer.history.append(text) 
+                            Viewer.name = text
+                            Viewer.cursor = 0
+                        # direct action
+                        elif text == "credits":
+                            Flytext(700, 400, "by mobdullah", fontsize = 100)  
+                        
+                        
    
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
             
-            # --- paint menu ----
-            for y, item in enumerate(Viewer.menu):
-                write(self.screen, item, 200, 100+y*20, color=(255,255,255))
-            # --- cursor ---
-            write(self.screen, "-->", 100, 100+ Viewer.cursor * 20, color=(255,255,255))
-                        
+         
             # -------------- UPDATE all sprites -------             
             self.flytextgroup.update(seconds)
 
             # ----------- clear, draw , update, flip -----------------
             self.allgroup.draw(self.screen)
 
+            # --- paint menu ----
+            # ---- name of active menu and history ---
+            write(self.screen, "you are here:", 200, 50, color=(0,255,255))
+            
+            t = "main"
+            for nr, i in enumerate(Viewer.history[1:]):
+                #if nr > 0:
+                t+=(" > ")
+                t+=(i)
+                #
+            
+            #t+=Viewer.name
+            write(self.screen, t, 200,70,color=(0,255,255))
+            # --- menu items ---
+            menu = Viewer.menu[Viewer.name]
+            for y, item in enumerate(menu):
+                write(self.screen, item, 200, 100+y*20, color=(255,255,255))
+            # --- cursor ---
+            write(self.screen, "-->", 100, 100+ Viewer.cursor * 20, color=(255,255,255))
+                        
             
            
                 
