@@ -437,11 +437,7 @@ class PowerUp(VectorSprite):
         self._layer = 4
         self.angle = 270
         self.hitpoints = 4
-        self.color = random.choice(((255,0,0), (0,255,0),
-                                    (0,0,255), (255,255,0),(255,255,255),
-                                    (255,0,0), (0,255,0),
-                                    (0,0,255), (255,255,0),(255,255,255),(128,0,128)
-                                  ))
+        self.color = random.choice(((255,0,0), (0,255,0),(0,0,255),(255,255,255),(128,0,128)))
     def create_image(self):
         self.image = pygame.Surface((40,40))
         #pygame.draw.circle(self.image, self.color, (20,20), 20)
@@ -449,8 +445,6 @@ class PowerUp(VectorSprite):
             self.image = Viewer.images["powerup_heal"]
         elif self.color == (0,0,255):
             self.image = Viewer.images["powerup_damage"]
-        elif self.color == (255,255,0):
-            self.image = Viewer.images["powerup_fastbullets"]
         elif self.color == (255,255,255):
             self.image = Viewer.images["powerup_shield"] 
         elif self.color == (0,255,0):
@@ -596,7 +590,8 @@ class Boss1(VectorSprite):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.hitpoints = 10000
+        self.maxhp = 10000 
+        self.hitpoints = self.maxhp
         self.hitpointsfull = 10000
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
         
@@ -621,15 +616,14 @@ class Boss1(VectorSprite):
         if self.pos.y > -200:
             self.move = pygame.math.Vector2(0,-7.5)
         else:
-            dx = 0
+            x = 0
             if random.random() < 0.01:
-                dx = random.choice((-7,-3,0,3,7))
-                self.move = pygame.math.Vector2(dx,0)
-        if self.pos.x < 200:
-            self.pos.x = 200
-        if self.pos.x > Viewer.width -200:
-            self.pos.x = Viewer.width -200
-            
+                x = random.choice((-7,-3,0,3,7))
+            if x < 200:
+                x = 7
+            if x > Viewer.width - 200:
+                x= -7
+            self.move = pygame.math.Vector2(x,0)
             
         self.fire()
         
@@ -699,6 +693,8 @@ class Player(VectorSprite):
         self.bonusrockets = {}
         self.speed = 1
         self.speed0 = 1
+        self.maxhp = 200
+        self.hitpoints = self.maxhp
         self.bonusspeed = {}
         self.firespeed = 188
         self.bonusfirespeed = {}
@@ -1019,48 +1015,67 @@ class Viewer(object):
     width = 0
     height = 0
     images = {}
-    # menu is a dict with {key: value, ...}
-    # the key must be unique
-    # the value must be a list
-    menu = {"main":            ["resume", "settings", "credits", "quit" ],
+    menu =  {"main":            ["resume", "settings", "credits", "quit" ],
+            #main
             "settings":        ["back", "video", "audio", "difficulty", "reset all values"],
+            #settings
             "difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
-            "powerups":        ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"],
-            "video":           ["back", "resolution", "fullscreen", "fpslock"],
             "audio":           ["back", "volume", "soundeffects"],
+            "video":           ["back", "resolution", "fullscreen", "fpslock"],
+            #difficulty
+            "bosshealth":      ["back", "1000", "2500", "5000", "10000"],
+            "playerhealth":    ["back", "100", "250", "500", "1000"],
+            "powerups":        ["back", "laser", "bonusrockets", "heal", "shield", "speed"],
+            #powerups
+            "bonusrockets":    ["back", "bonusrocket increase", "bonusrocket duration"],
+            "laser":           ["back", "laserdamage", "laser duration"],
+            "heal":            ["back", "heal effectiveness"],
+            "shield":          ["back", "bossrocket deflection", "shield duration"],
+            "speed":           ["back", "speed increase", "speed duration"],
+            #powerup effects
+            "bonusrocket increase": ["back", "+1", "+2", "+3", "+5", "+10"],
+            "bonusrocket duration": ["back", "10 seconds", "30 seconds", "1 minute"],
+            "laserdamage":     ["back", "3 damage", "5 damage", "10 damage"],
+            "laser duration": ["back", "10 seconds", "30 seconds", "1 minute"],            
+            "heal effectiveness": ["back", "+50", "+100", "+200", "full health"],
+            "bossrocket deflection": ["back", "true", "false"],
+            "shield duration": ["back", "10 seconds", "30 seconds", "1 minute"],
+            "speed increase":  ["back", "+3", "+5", "+10", "+15"],
+            "speed duration":  ["back", "10 seconds", "30 seconds", "1 minute"],
+            #video
+            "resolution":      ["back", "720p", "1080p", "1440p", "4k"],
+            "fullscreen":      ["back", "true", "false"],
+            "fpslock":         ["back", "30fps", "60fps", "90fps", "120fps", "144fps"],
+            #audio    
             "volume":          ["back", "low", "medium", "high"],
-            "bosshealth":      ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9000", "10000", "20000"],
-            "playerhealth":    ["back", "50", "100", "150", "200", "250", "300", "500", "1000"],
-            "laser":           ["back", "laser frequency", "laser damage", "laser duration"],
-            "laser frequency": ["back", "never", "seldom", "sometimes", "often"],
-            }
+            "soundeffects":    ["back", "true", "false"]                                   }
     #mainmenu = [ "resume", "settings", "credits", "quit" ]
     #settingsmenu = ["back", "video", "audio", "difficulty", "reset all values"]
     #difficultymenu = ["back", ["powerups", "bosshealth", "playerhealth"]
     #powerupsmenu = ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"] 
     #lasermenu = ["back", "powerupappearance", "laserdamage", "duration"]
-    bonusrocketsmenu = ["back", "powerupappearance", "bonusrocketincrease", "duration"]
-    bulletspeedmenu = ["back", "powerupappearance", "bulletspeedincrease", "duration"]
-    healmenu = ["back", "powerupappearance", "healingeffectivity", "duration"]
-    shieldmenu = ["back", "powerupappearance", "bossrocket deflection", "duration"]
-    speedmenu = ["back", "powerupappearance", "speedincrease", "duration"]
-    bonusrocketincreasemenu = ["back", "+1", "+2", "+3", "+4","+5"]
-    bulletspeedincreasemenu = ["back", "+5", "+10", "+15"]
-    speedincreasemenu = ["back", "+1", "+3", "+5", "+7", "+10"]
-    powerupappearancemenu = ["back", "never", "seldom", "sometimes", "often"]
-    bossrocketdeflectionmenu = ["back", "true", "false"]
-    healingeffectivitymenu = ["back", "+25", "+50", "+100", "full health"]
-    durationmenu = ["back", "5 seconds", "10 seconds", "20 seconds", "30 seconds", "1 minute"]
-    laserdamagemenu = ["back", "180 dps", "300 dps", "600 dps"]
+    #bonusrocketsmenu = ["back", "powerupappearance", "bonusrocketincrease", "duration"]
+    #bulletspeedmenu = ["back", "powerupappearance", "bulletspeedincrease", "duration"]
+    #healmenu = ["back", "powerupappearance", "healingeffectivity", "duration"]
+    #shieldmenu = ["back", "powerupappearance", "bossrocket deflection", "duration"]
+    #speedmenu = ["back", "powerupappearance", "speedincrease", "duration"]
+    #bonusrocketincreasemenu = ["back", "+1", "+2", "+3", "+4","+5"]
+    #bulletspeedincreasemenu = ["back", "+5", "+10", "+15"]
+    #speedincreasemenu = ["back", "+1", "+3", "+5", "+7", "+10"]
+    #powerupappearancemenu = ["back", "never", "seldom", "sometimes", "often"]
+    #bossrocketdeflectionmenu = ["back", "true", "false"]
+    #healingeffectivitymenu = ["back", "+25", "+50", "+100", "full health"]
+    #durationmenu = ["back", "5 seconds", "10 seconds", "20 seconds", "30 seconds", "1 minute"]
+    #laserdamagemenu = ["back", "180 dps", "300 dps", "600 dps"]
     #videomenu = ["back", "resolution", "fullscreen", "fpslock"]
-    resolutuinmenu = ["back", "480p", "720p", "1080p", "1440p", "4k"]
-    fullscreenmenu = ["back", "true", "false"]
-    fpslockmenu = ["back", "30fps", "60fps", "90fps", "120fps", "144fps"]
+    #resolutuinmenu = ["back", "480p", "720p", "1080p", "1440p", "4k"]
+    #fullscreenmenu = ["back", "true", "false"]
+    #fpslockmenu = ["back", "30fps", "60fps", "90fps", "120fps", "144fps"]
     #playerhealthmenu = ["back", "50", "100", "150", "200", "250", "300", "500", "1000"]
     #bosshealthmenu = ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9000", "10000", "20000"]
     #audiomenu = ["back", "volume", "soundeffects"]
-    volumemenu = ["back", "low", "medium", "high"]
-    soundeffectsmenu = ["back", "on", "off"]
+    #volumemenu = ["back", "low", "medium", "high"]
+    #soundeffectsmenu = ["back", "on", "off"]
     history = ["main"]
     cursor = 0
     name = "main"
@@ -1103,12 +1118,21 @@ class Viewer(object):
         self.loadbackground()
         self.level = 0
         self.new_level()
-        # ---- default values for game settings:
-        self.reset_settings()
         
-    def reset_settings(self):
-        # powerups 
-        self.laserfrequency = "often"
+        # - --- - - - - - menu stuff - - - -- - - - #
+        # powerup effects
+        self.laserdamage = 5
+        self.healingeffectivity = 50
+        self.speedincrease = 5
+        self.bonusrocketincrease = 3
+        # powerup duration
+        self.bonusrocketduration = 10
+        self.laserduration = 10
+        self.speedduration = 15
+        self.shieldduration = 15
+        
+       
+    
     
     def killcounter(self, victim):
         name = victim.__class__.__name__
@@ -1306,14 +1330,114 @@ class Viewer(object):
                         # direct action
                         elif text == "credits":
                             Flytext(700, 400, "by mobdullah", fontsize = 100)  
-                        # settings
-                        elif Viewer.name == "laser frequency":
-                            # set this value
-                            self.laserfrequency = text
-                            Flytext(700,400, "laser frequency is now set to "+ text)
-                        
-                        
-   
+                        if Viewer.name == "bossrocket increase":
+                            if text == "+1":
+                                self.bonusrocketincrease = 1
+                            elif text == "+2":
+                                self.bonusrocketincrease = 2
+                            elif text == "+3":
+                                self.bonusrocketincrease = 3
+                            elif text == "+5":
+                                self.bonusrocketincrease = 5
+                            elif text == "+10":
+                                self.bonusrocketincrease = 10
+                        if Viewer.name == "bonusrocket duration":
+                            if text == "10 seconds":
+                                self.bonusrocketduration = 10
+                            elif text == "30 seconds":
+                                self.bonusrocketduration = 30
+                            elif text == "1 minute":
+                                self.bonusrocketduration = 60
+                        if Viewer.name == "laserdamage":
+                            if text == "3 damage":
+                                self.laserdamage = 3
+                            elif text == "5 damage":
+                                self.laserdamage = 5
+                            elif text == "10 damage":
+                                self.laserdamage = 10
+                        if Viewer.name == "laserduration":
+                            if text == "10 seconds":
+                                self.laserduration = 10
+                            elif text == "30 seconds":
+                                self.laserduration = 30
+                            elif text == "1 minute":
+                                self.laserduration = 60
+                        if Viewer.name == "heal effectivenes":
+                            if text == "+50":
+                                self.healingeffectivity = 50
+                            if text == "+100":
+                                self.healingeffectivity = 100
+                            if text == "+250":
+                                self.healingeffectivity = 250
+                            if text == "full health":
+                                self.healingeffectivity = 9999
+                        if Viewer.name == "shield duration":
+                            if text == "10 seconds":
+                                self.shieldduration = 10
+                            elif text == "30 seconds":
+                                self.shieldduration = 30
+                            elif text == "1 minute":
+                                self.shieldduration = 60
+                        if Viewer.name == "speed increase":
+                            if text == "+3":
+                                self.speedincrease = 3
+                            elif text == "+5":
+                                self.speedincrease = 5
+                            elif text == "+10":
+                                self.speedincrease = 10
+                            elif text == "+15":
+                                self.speedincrease = 15
+                        if Viewer.name == "speed duration":
+                            if text == "10 seconds":
+                                self.speedduration = 10
+                            elif text == "30 seconds":
+                                self.speedduration = 30
+                            elif text == "1 minute":
+                                self.speedduration = 60
+                        if Viewer.name == "resolution":
+                            if text == "720p":     #1280x720
+                                pass
+                            elif text == "1080p":  #1920x1080
+                                pass
+                            elif text == "1440p":  #2560x1440
+                                pass
+                            elif text == "4k":     #3840x2860
+                                pass
+                        if Viewer.name == "fullscreen":
+                            if text == "true":
+                                pass
+                            elif text == "false":
+                                pass
+                        if Viewer.name == "volume":
+                            if text == "low":
+                                pass
+                            elif text == "medium":
+                                pass
+                            elif text == "high":
+                                pass
+                        if Viewer.name == "soundeffects":
+                            if text == "true":
+                                pass
+                            elif text == "false":
+                                pass
+                        if Viewer.name == "bosshealth":
+                            if text == "1000":
+                                Boss1.maxhp = 1000
+                            elif text == "2500":
+                                Boss1.maxhp = 2500
+                            elif text == "5000":
+                                Boss1.maxhp = 5000
+                            elif text == "10000":
+                                Boss1.myxhp = 10000
+                        if Viewer.name == "playerhealth":
+                            if text == "100":
+                                self.player1.maxhp = 100
+                            elif text == "250":
+                                self.player1.maxhp = 250
+                            elif text == "500":
+                                self.player1.maxhp = 500
+                            elif text == "1000":
+                                self.player1.maxhp = 1000
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
             
@@ -1544,35 +1668,30 @@ class Viewer(object):
                            pygame.sprite.collide_mask)
                 for o in crashgroup:
                     if o.color == (255,0,0):
-                        Flytext(o.pos.x, - o.pos.y, "+50 hitpoints")
-                        p.hitpoints += 50
-                        if p.hitpoints > 200:
-                            p.hitpoints = 200 
+                        Flytext(o.pos.x, - o.pos.y, "repairing spaceship")
+                        p.hitpoints += self.healingeffectivity
+                        if p.hitpoints > self.player1.maxhp:
+                            p.hitpoints = self.player1.maxhp 
                         Explosion(o.pos, red=255, green=0, blue=0)
                         o.kill()
                     elif o.color == (0,255,0):
-                        Flytext(o.pos.x, - o.pos.y, "+5 speed for 20 seconds")
-                        p.bonusspeed[p.age+20] = 5
+                        Flytext(o.pos.x, - o.pos.y, "turbo active")
+                        p.bonusspeed[p.age+self.speedduration] = self.speedincrease
                         Explosion(o.pos, red=0, green=255, blue=0)
                         o.kill()
                     elif o.color == (0,0,255):
-                        Flytext(o.pos.x, -o.pos.y, "+3 Bonusrockets for 10 seconds")
-                        p.bonusrockets[p.age+10] = 3
+                        Flytext(o.pos.x, -o.pos.y, "Bonusrockets aquired")
+                        p.bonusrockets[p.age+self.bonusrocketduration] = self.bonusrocketincrease
                         Explosion(o.pos, red=0, green=0, blue=255)
                         o.kill()
-                    elif o.color == (255,255,0):
-                        Flytext(o.pos.x, -o.pos.y, "+1 fire speed for 30 seconds")
-                        p.bonusfirespeed[p.age+10] = 200
-                        Explosion(o.pos, red=255, green=255, blue=0)
-                        o.kill()
                     elif o.color == (255,255,255):
-                        Flytext(o.pos.x, -o.pos.y, "+1 shield for 30 seconds")
+                        Flytext(o.pos.x, -o.pos.y, "shield activated")
                         p.shield[p.age+10] = 20
                         Explosion(o.pos, red=255, green=255, blue=255)
                         o.kill()
                     elif o.color == (128,0,128):
-                        Flytext(o.pos.x, -o.pos.y, " laser for 10 seconds")
-                        p.laser[p.age+10] = 1
+                        Flytext(o.pos.x, -o.pos.y, " laser activated")
+                        p.laser[p.age+self.laserduration] = 1
                         Explosion(o.pos, red=128, green=0, blue=128)
                         o.kill()
             
@@ -1617,7 +1736,7 @@ class Viewer(object):
                 for e in crashgroup:
                      if e.__class__.__name__ != "Boss1":
                          Explosion(posvector = e.pos,red = 100,minsparks = 1,maxsparks = 2)
-                         e.hitpoints -= 10
+                         e.hitpoints -= self.laserdamage
                          if e.hitpoints <= 0:
                              self.killcounter(e)
                      else:
@@ -1638,7 +1757,7 @@ class Viewer(object):
                              error = True
                          if not error:
                              Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2, minangle=190, maxangle=350  )
-                             e.hitpoints -= 5
+                             e.hitpoints -= self.laserdamage
                              if e.hitpoints <= 0:
                                 pygame.mixer.music.stop()
                                 self.killcounter(e)
@@ -1651,7 +1770,7 @@ class Viewer(object):
                              
                 for e in crashgroup:
                     e.hitpoints -= 10 
-                    p.hitpoints -= 10
+                    p.hitpoints -= 1
                     
                     
     
@@ -1672,10 +1791,10 @@ class Viewer(object):
                             self.player1.hitpoints += 15
                             self.player2.hitpoints += 15
                             self.killcounter(e)
-                        if self.player1.hitpoints > 200:
-                            self.player1.hitpoints = 200
-                        if self.player2.hitpoints > 200:
-                            self.player2.hitpoints = 200    
+                        if self.player1.hitpoints > self.player1.maxhp:
+                            self.player1.hitpoints = self.player1.maxhp
+                        if self.player2.hitpoints > self.player1.maxhp:
+                            self.player2.hitpoints = self.player1.maxhp    
                         Explosion(pygame.math.Vector2(r.pos.x, r.pos.y),red=0,green=150,blue=0)
                         r.kill()
                     else:
