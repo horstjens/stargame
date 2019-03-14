@@ -1,18 +1,13 @@
 """
-author: Mohamed und abdullah
+author: Mohamed und Abdullah
 email: moha.alsaby@gmail.com 
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
-download: 
-ihttps://github.com/horstjens/stargame/edit/master/stargame.py
-
+download: https://github.com/horstjens/stargame/edit/master/stargame.py
 """
 import pygame
 import random
 import os
-import time
-import math
 
-"""Best game: 10 waves by Ines"""
 
 def randomize_color(color, delta=50):
     d=random.randint(-delta, delta)
@@ -603,12 +598,13 @@ class Boss1(VectorSprite):
     def kill(self):
         Explosion(posvector=self.pos, red=200, red_delta=25, minsparks=500, maxsparks=600, maxlifetime=7)
         VectorSprite.kill(self)
-        
+   
+   
     def update(self,seconds):
         VectorSprite.update(self,seconds)
         self.damage = 1- self.hitpoints / self.hitpointsfull
         self.fire()
-        print("bossdamage:", self.damage)
+        #print("bossdamage:", self.damage)
         if self.pos.y > 0:
             self.image = Viewer.images["Boss_immortal"]
         else:
@@ -626,6 +622,7 @@ class Boss1(VectorSprite):
         if self.pos.x > Viewer.width -200:
             self.pos.x = Viewer.width -200
             
+        
     
     def fire(self):
         """shoot a salvo towards a player"""
@@ -1032,52 +1029,30 @@ class Viewer(object):
             "shield":          ["back", "bossrocket deflection", "shield duration"],
             "speed":           ["back", "speed increase", "speed duration"],
             #powerup effects
-            "bonusrocket increase": ["back", "+1", "+2", "+3", "+5", "+10"],
-            "bonusrocket duration": ["back", "10 seconds", "30 seconds", "1 minute"],
-            "laserdamage":     ["back", "3 damage", "5 damage", "10 damage"],
-            "laser duration": ["back", "10 seconds", "30 seconds", "1 minute"],            
-            "heal effectiveness": ["back", "+50", "+100", "+200", "full health"],
+            "bonusrocket increase": ["back", "1", "2", "3", "5", "10"],
+            "bonusrocket duration": ["back", "10", "30", "60"],
+            "laserdamage":     ["back", "3", "5", "10"],
+            "laser duration": ["back", "10", "30", "60"],            
+            "heal effectiveness": ["back", "50", "100", "200", "full health"],
             "bossrocket deflection": ["back", "true", "false"],
-            "shield duration": ["back", "10 seconds", "30 seconds", "1 minute"],
-            "speed increase":  ["back", "+3", "+5", "+10", "+15"],
-            "speed duration":  ["back", "10 seconds", "30 seconds", "1 minute"],
+            "shield duration": ["back", "10", "30", "60"],
+            "speed increase":  ["back", "3", "5", "10", "15"],
+            "speed duration":  ["back", "10", "30", "60"],
             #video
             "resolution":      ["back", "720p", "1080p", "1440p", "4k"],
             "fullscreen":      ["back", "true", "false"],
             "fpslock":         ["back", "30fps", "60fps", "90fps", "120fps", "144fps"],
             #audio    
             "volume":          ["back", "low", "medium", "high"],
-            "soundeffects":    ["back", "true", "false"]                                   }
-    #mainmenu = [ "resume", "settings", "credits", "quit" ]
-    #settingsmenu = ["back", "video", "audio", "difficulty", "reset all values"]
-    #difficultymenu = ["back", ["powerups", "bosshealth", "playerhealth"]
-    #powerupsmenu = ["back", "laser", "bonusrockets", "bulletspeed", "heal", "shield", "speed"] 
-    #lasermenu = ["back", "powerupappearance", "laserdamage", "duration"]
-    #bonusrocketsmenu = ["back", "powerupappearance", "bonusrocketincrease", "duration"]
-    #bulletspeedmenu = ["back", "powerupappearance", "bulletspeedincrease", "duration"]
-    #healmenu = ["back", "powerupappearance", "healingeffectivity", "duration"]
-    #shieldmenu = ["back", "powerupappearance", "bossrocket deflection", "duration"]
-    #speedmenu = ["back", "powerupappearance", "speedincrease", "duration"]
-    #bonusrocketincreasemenu = ["back", "+1", "+2", "+3", "+4","+5"]
-    #bulletspeedincreasemenu = ["back", "+5", "+10", "+15"]
-    #speedincreasemenu = ["back", "+1", "+3", "+5", "+7", "+10"]
-    #powerupappearancemenu = ["back", "never", "seldom", "sometimes", "often"]
-    #bossrocketdeflectionmenu = ["back", "true", "false"]
-    #healingeffectivitymenu = ["back", "+25", "+50", "+100", "full health"]
-    #durationmenu = ["back", "5 seconds", "10 seconds", "20 seconds", "30 seconds", "1 minute"]
-    #laserdamagemenu = ["back", "180 dps", "300 dps", "600 dps"]
-    #videomenu = ["back", "resolution", "fullscreen", "fpslock"]
-    #resolutuinmenu = ["back", "480p", "720p", "1080p", "1440p", "4k"]
-    #fullscreenmenu = ["back", "true", "false"]
-    #fpslockmenu = ["back", "30fps", "60fps", "90fps", "120fps", "144fps"]
-    #playerhealthmenu = ["back", "50", "100", "150", "200", "250", "300", "500", "1000"]
-    #bosshealthmenu = ["back", "1000", "2000", "3000", "4000", "5000", "6000", "7000", "8000", "9000", "10000", "20000"]
-    #audiomenu = ["back", "volume", "soundeffects"]
-    #volumemenu = ["back", "low", "medium", "high"]
-    #soundeffectsmenu = ["back", "on", "off"]
+            "soundeffects":    ["back", "true", "false"]                                   
+            }
+    
+    
+    #Viewer.menu["resolution"] = pygame.display.list_modes()
     history = ["main"]
     cursor = 0
     name = "main"
+    fullscreen = False
 
     def __init__(self, width=640, height=400, fps=60):
         """Initialize pygame, window, background, font,...
@@ -1086,9 +1061,19 @@ class Viewer(object):
         pygame.init()
         Viewer.width = width    # make global readable
         Viewer.height = height
-        self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
-        self.background = pygame.Surface(self.screen.get_size()).convert()
-        self.background.fill((255,255,255)) # fill background white
+        li = []
+        for i in pygame.display.list_modes():
+            # li is something like "(800, 600)"
+            pair = str(i)
+            comma = pair.find(",")
+            x = pair[1:comma]
+            y = pair[comma+2:-1]
+            li.append(str(x)+"x"+str(y))
+        Viewer.menu["resolution"] = li
+        self.set_resolution()
+        #self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
+        #self.background = pygame.Surface(self.screen.get_size()).convert()
+        #self.background.fill((255,255,255)) # fill background white
         self.clock = pygame.time.Clock()
         self.fps = fps
         self.playtime = 0.0
@@ -1131,7 +1116,12 @@ class Viewer(object):
         self.shieldduration = 15
         
        
-    
+    def set_resolution(self):
+        if Viewer.fullscreen:
+             self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF|pygame.FULLSCREEN)
+        else:
+             self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
+        self.loadbackground()
     
     def killcounter(self, victim):
         name = victim.__class__.__name__
@@ -1153,7 +1143,7 @@ class Viewer(object):
             self.b1 += 1
         if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0:
             self.new_level()
-        
+    
     def new_level(self):
         self.level += 1
         self.e1 = self.level * 1
@@ -1400,19 +1390,24 @@ class Viewer(object):
                             elif text == "1 minute":
                                 self.speedduration = 60
                         if Viewer.name == "resolution":
-                            if text == "720p":     #1280x720
-                                pass
-                            elif text == "1080p":  #1920x1080
-                                pass
-                            elif text == "1440p":  #2560x1440
-                                pass
-                            elif text == "4k":     #3840x2860
-                                pass
+                            # text is something like 800x600
+                            t = text.find("x")
+                            if t == -1:
+                                Flytext(100,100, "bad resolution, no x found in : " + text)
+                            else:
+                                x = int(text[:t])
+                                y = int(text[t+1:])
+                                Viewer.width = x
+                                Viewer.height = y
+                                self.set_resolution()
+                                
                         if Viewer.name == "fullscreen":
                             if text == "true":
-                                pass
+                                Viewer.fullscreen = True
+                                self.set_resolution()
                             elif text == "false":
-                                pass
+                                Viewer.fullscreen = False
+                                self.set_resolution()
                         if Viewer.name == "volume":
                             if text == "low":
                                 pass
