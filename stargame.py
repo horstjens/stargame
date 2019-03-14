@@ -422,6 +422,15 @@ class VectorSprite(pygame.sprite.Sprite):
 
 class PowerUp(VectorSprite):
     
+    howmuch = {(255,0,0): 0,
+                (0,255,0): 0,
+                (0,0,255): 0,
+                (255,255,255):0,
+                (128,0,128): 0                
+                             }
+    
+    colors = ((255,0,0), (0,255,0),(0,0,255),(255,255,255),(128,0,128))
+    
     def _overwrite_parameters(self):
         self.pos = pygame.math.Vector2(random.randint(
                    0, Viewer.width) , -1)
@@ -432,7 +441,23 @@ class PowerUp(VectorSprite):
         self._layer = 4
         self.angle = 270
         self.hitpoints = 4
-        self.color = random.choice(((255,0,0), (0,255,0),(0,0,255),(255,255,255),(128,0,128)))
+        
+        # not really random choice... take the least popular powerup
+        
+        kleinste = min(PowerUp.howmuch.values())
+        mycolors = []
+        for color in PowerUp.howmuch:
+            if PowerUp.howmuch[color] == kleinste:
+                mycolors.append(color)
+        self.color = random.choice(mycolors)
+        
+        #self.color = random.choice(((255,0,0), (0,255,0),(0,0,255),(255,255,255),(128,0,128)))
+        PowerUp.howmuch[self.color] += 1
+        
+    def kill(self):
+        PowerUp.howmuch[self.color] -= 1
+        VectorSprite.kill(self)
+        
     def create_image(self):
         self.image = pygame.Surface((40,40))
         #pygame.draw.circle(self.image, self.color, (20,20), 20)
@@ -451,7 +476,7 @@ class PowerUp(VectorSprite):
         self.image.convert_alpha()
         self.image0 = self.image.copy()
         self.rect = self.image.get_rect()
-    
+
 
 class Enemy1(VectorSprite):
     """small enemy spaceship"""
