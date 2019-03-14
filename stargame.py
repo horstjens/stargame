@@ -1138,10 +1138,16 @@ class Viewer(object):
         name = victim.__class__.__name__
         if name == "Enemy1":
             self.e1 -= 1
+            if self.e1 < 0:
+                self.e1 = 0 
         elif name == "Enemy2":
             self.e2 -= 1
+            if self.e2 < 0:
+                self.e2 = 0
         elif name == "Enemy3":
             self.e3 -= 1
+            if self.e3 > 0:
+                self.e3 = 0
         elif name == "Boss1":
             self.b1 -= 3
         if self.level == 1 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
