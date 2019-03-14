@@ -607,6 +607,7 @@ class Boss1(VectorSprite):
     def update(self,seconds):
         VectorSprite.update(self,seconds)
         self.damage = 1- self.hitpoints / self.hitpointsfull
+        self.fire()
         print("bossdamage:", self.damage)
         if self.pos.y > 0:
             self.image = Viewer.images["Boss_immortal"]
@@ -616,17 +617,15 @@ class Boss1(VectorSprite):
         if self.pos.y > -200:
             self.move = pygame.math.Vector2(0,-7.5)
         else:
-            x = 0
+            dx = 0
             if random.random() < 0.01:
-                x = random.choice((-7,-3,0,3,7))
-            if x < 200:
-                x = 7
-            if x > Viewer.width - 200:
-                x= -7
-            self.move = pygame.math.Vector2(x,0)
+                dx = random.choice((-7,-3,0,3,7))
+                self.move = pygame.math.Vector2(dx,0)
+        if self.pos.x < 200:
+            self.pos.x = 200
+        if self.pos.x > Viewer.width -200:
+            self.pos.x = Viewer.width -200
             
-        self.fire()
-        
     
     def fire(self):
         """shoot a salvo towards a player"""
