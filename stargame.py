@@ -477,7 +477,6 @@ class PowerUp(VectorSprite):
         self.image0 = self.image.copy()
         self.rect = self.image.get_rect()
 
-
 class Enemy1(VectorSprite):
     """small enemy spaceship"""
     def _overwrite_parameters(self):
@@ -972,6 +971,20 @@ class Rocket(VectorSprite):
         self.image.convert_alpha()
         self.image0 = self.image.copy()
         self.rect = self.image.get_rect()
+class Omegarocket(VectorSprite):
+    def _overwrite_parameters(self):
+        self._layer = 1  
+        self.radius = 25 
+        self.mass = 800
+
+    def update(self, seconds):
+        VectorSprite.update(self, seconds)
+
+    def create_image(self):
+        self.image = Viewer.images["omegarocket"]
+        self.image.convert_alpha()
+        self.image0 = self.image.copy()
+        self.rect = self.image.get_rect()
 
 class Evilrocket(VectorSprite):
 
@@ -1058,7 +1071,7 @@ class Viewer(object):
             "bonusrocket duration": ["back", "10", "30", "60"],
             "laserdamage":     ["back", "3", "5", "10"],
             "laser duration": ["back", "10", "30", "60"],            
-            "heal effectiveness": ["back", "50", "100", "200", "full health"],
+            "heal effectiveness": ["back", "50", "100", "250", "full health"],
             "bossrocket deflection": ["back", "true", "false"],
             "shield duration": ["back", "10", "30", "60"],
             "speed increase":  ["back", "3", "5", "10", "15"],
@@ -1134,6 +1147,7 @@ class Viewer(object):
         self.healingeffectivity = 50
         self.speedincrease = 5
         self.bonusrocketincrease = 3
+        self.bossrocketdeflection = False
         # powerup duration
         self.bonusrocketduration = 10
         self.laserduration = 10
@@ -1242,9 +1256,14 @@ class Viewer(object):
                  os.path.join("data", "boss_invertedblue.png")).convert_alpha()     
         Viewer.images["bossrocket"]=pygame.image.load(
                  os.path.join("data", "bossrocket.png")).convert_alpha() 
+        Viewer.images["omegarocket"]=pygame.image.load(
+                 os.path.join("data", "omegarocket.png")).convert_alpha()
         # --- scalieren ---
         for name in Viewer.images:
             if name == "bossrocket":
+                Viewer.images[name] = pygame.transform.scale(
+                                    Viewer.images[name], (60, 60))
+            if name == "omegarocket":
                 Viewer.images[name] = pygame.transform.scale(
                                     Viewer.images[name], (60, 60))
             if name == "enemy3" :
@@ -1282,6 +1301,7 @@ class Viewer(object):
         self.bossrocketgroup = pygame.sprite.Group()
         self.evilrocketgroup = pygame.sprite.Group()
         self.enemygroup = pygame.sprite.Group()
+        self.omegarocketgroup = pygame.sprite.Group()
         self.bossgroup = pygame.sprite.Group()
         self.powerupgroup = pygame.sprite.Group()
         self.shieldgroup = pygame.sprite.Group()
@@ -1292,6 +1312,7 @@ class Viewer(object):
         VectorSprite.groups = self.allgroup
         Player.groups = self.allgroup, self.playergroup  # , self.tailgroup
         Rocket.groups = self.allgroup, self.rocketgroup
+        Omegarocket.groups = self.allgroup, self.omegarocketgroup
         Bossrocket.groups = self.allgroup, self.bossrocketgroup
         Evilrocket.groups = self.allgroup, self.evilrocketgroup
         Flytext.groups = self.allgroup, self.flytextgroup
@@ -1308,6 +1329,7 @@ class Viewer(object):
    
         Engine_glow(bossnumber = self.player1.number, sticky_with_boss=True, angle = self.player1.angle+180)
         Engine_glow(bossnumber = self.player2.number, sticky_with_boss=True, angle = self.player2.angle+180)
+        
    
    
     def menurun(self):
@@ -1351,68 +1373,75 @@ class Viewer(object):
                         elif text == "credits":
                             Flytext(700, 400, "by mobdullah", fontsize = 100)  
                         if Viewer.name == "bossrocket increase":
-                            if text == "+1":
+                            if text == "1":
                                 self.bonusrocketincrease = 1
-                            elif text == "+2":
+                            elif text == "2":
                                 self.bonusrocketincrease = 2
-                            elif text == "+3":
+                            elif text == "3":
                                 self.bonusrocketincrease = 3
-                            elif text == "+5":
+                            elif text == "5":
                                 self.bonusrocketincrease = 5
-                            elif text == "+10":
+                            elif text == "10":
                                 self.bonusrocketincrease = 10
                         if Viewer.name == "bonusrocket duration":
-                            if text == "10 seconds":
+                            if text == "10":
                                 self.bonusrocketduration = 10
-                            elif text == "30 seconds":
+                            elif text == "30":
                                 self.bonusrocketduration = 30
-                            elif text == "1 minute":
+                            elif text == "60":
                                 self.bonusrocketduration = 60
                         if Viewer.name == "laserdamage":
-                            if text == "3 damage":
+                            if text == "3":
                                 self.laserdamage = 3
-                            elif text == "5 damage":
+                            elif text == "5":
                                 self.laserdamage = 5
-                            elif text == "10 damage":
+                            elif text == "10":
                                 self.laserdamage = 10
                         if Viewer.name == "laserduration":
-                            if text == "10 seconds":
+                            if text == "10":
                                 self.laserduration = 10
-                            elif text == "30 seconds":
+                            elif text == "30":
                                 self.laserduration = 30
-                            elif text == "1 minute":
+                            elif text == "60":
                                 self.laserduration = 60
-                        if Viewer.name == "heal effectivenes":
-                            if text == "+50":
+                        if Viewer.name == "heal effectiveness":
+                            if text == "50":
                                 self.healingeffectivity = 50
-                            if text == "+100":
+                            if text == "100":
                                 self.healingeffectivity = 100
-                            if text == "+250":
+                                print("heal")
+                            if text == "250":
                                 self.healingeffectivity = 250
+                                print("heal")
                             if text == "full health":
                                 self.healingeffectivity = 9999
                         if Viewer.name == "shield duration":
-                            if text == "10 seconds":
+                            if text == "10":
                                 self.shieldduration = 10
-                            elif text == "30 seconds":
+                            elif text == "30":
                                 self.shieldduration = 30
-                            elif text == "1 minute":
+                            elif text == "60":
                                 self.shieldduration = 60
+                        if Viewer.name == "bossrocket deflection":
+                            if text == "true":
+                                self.bossrocketdeflection = True
+                            if text == "false":
+                                self.bossrocketdeflection = False
                         if Viewer.name == "speed increase":
-                            if text == "+3":
+                            if text == "3":
                                 self.speedincrease = 3
-                            elif text == "+5":
+                            elif text == "5":
                                 self.speedincrease = 5
-                            elif text == "+10":
+                            elif text == "10":
                                 self.speedincrease = 10
-                            elif text == "+15":
+                            elif text == "15":
                                 self.speedincrease = 15
                         if Viewer.name == "speed duration":
-                            if text == "10 seconds":
+                            if text == "10":
                                 self.speedduration = 10
-                            elif text == "30 seconds":
+                            elif text == "30":
                                 self.speedduration = 30
-                            elif text == "1 minute":
+                            elif text == "60":
                                 self.speedduration = 60
                         if Viewer.name == "resolution":
                             # text is something like 800x600
@@ -1509,6 +1538,7 @@ class Viewer(object):
         gameOver = False
         exittime = 0
         while running:
+            
             
             milliseconds = self.clock.tick(self.fps) #
             seconds = milliseconds / 1000
@@ -1691,7 +1721,7 @@ class Viewer(object):
                            pygame.sprite.collide_mask)
                 for o in crashgroup:
                     if o.color == (255,0,0):
-                        Flytext(o.pos.x, - o.pos.y, "repairing spaceship")
+                        Flytext(o.pos.x, - o.pos.y, "repairing spaceship: + {}".format(self.healingeffectivity))
                         p.hitpoints += self.healingeffectivity
                         if p.hitpoints > self.player1.maxhp:
                             p.hitpoints = self.player1.maxhp 
@@ -1752,6 +1782,48 @@ class Viewer(object):
                      Rocket(pos=r.pos, move= m, angle= a,
                             kill_on_edge = True, color= (0,255,0), max_age=10)
                      r.kill()
+            # ----- collision detection between shield and bossrocket -----
+            for s in self.shieldgroup:
+                crashgroup = pygame.sprite.spritecollide(s, self.bossrocketgroup,
+                             False, pygame.sprite.collide_mask)
+                for r in crashgroup:
+                    if self.bossrocketdeflection == True:
+                        Omegarocket(pos=r.pos, move= r.move * -1, angle= r.angle,
+                               kill_on_edge = True, color= (0,255,0), max_age=10)
+                        r.kill()
+                    else:
+                        break
+            
+            # ----- collision detection between enemy and rocket -----
+            for e in self.enemygroup:
+                crashgroup = pygame.sprite.spritecollide(e, self.omegarocketgroup,
+                             False, pygame.sprite.collide_mask)
+                for r in crashgroup:
+                    if e.__class__.__name__ != "Boss1":
+                        e.hitpoints -= 40
+                        if e.hitpoints <= 0:
+                            self.player1.hitpoints += 15
+                            self.player2.hitpoints += 15
+                            self.killcounter(e)
+                        if self.player1.hitpoints > self.player1.maxhp:
+                            self.player1.hitpoints = self.player1.maxhp
+                        if self.player2.hitpoints > self.player1.maxhp:
+                            self.player2.hitpoints = self.player1.maxhp    
+                        Explosion(pygame.math.Vector2(r.pos.x, r.pos.y),red=0,green=150,blue=0)
+                        r.kill()
+                    else:
+                        # --- it's a boss1 ! ------
+                        if e.pos.y > 0:
+                             break
+                        Explosion(posvector = r.pos,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2)
+                        e.hitpoints -= 5
+                        if e.hitpoints <= 0:
+                             pygame.mixer.music.stop()
+                             self.killcounter(e)
+                        r.kill()
+            
+            
+            
             # ------- collision detection between Laser and Enemy-------
             for l in self.lasergroup:
                 crashgroup = pygame.sprite.spritecollide(l, self.enemygroup,
