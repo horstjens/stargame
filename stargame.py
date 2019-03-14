@@ -1397,7 +1397,7 @@ class Viewer(object):
                                 self.laserdamage = 5
                             elif text == "10":
                                 self.laserdamage = 10
-                        if Viewer.name == "laserduration":
+                        if Viewer.name == "laser duration":
                             if text == "10":
                                 self.laserduration = 10
                             elif text == "30":
@@ -1843,12 +1843,10 @@ class Viewer(object):
                          a2 = (playerpos.x - e.pos.x)**2
                          c2 = 180**2
                          b = (c2-a2)**0.5
-                         print("b:",b)
                          error = False
                          try:
                              iv += pygame.math.Vector2(0,-b)
                          except:
-                             print("au weia!!! aaa unable for bossrocket because of b:",b)
                              error = True
                          if not error:
                              Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2, minangle=190, maxangle=350  )
