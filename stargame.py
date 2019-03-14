@@ -1282,7 +1282,7 @@ class Viewer(object):
         self.player2 =  Player(imagename="player2", angle=180,warp_on_edge=True, pos=pygame.math.Vector2(Viewer.width/2+100,-Viewer.height/2))
    
         Engine_glow(bossnumber = self.player1.number, sticky_with_boss=True, angle = self.player1.angle+180)
-        
+        Engine_glow(bossnumber = self.player2.number, sticky_with_boss=True, angle = self.player2.angle+180)
    
    
     def menurun(self):
@@ -1484,9 +1484,6 @@ class Viewer(object):
         gameOver = False
         exittime = 0
         while running:
-            pygame.display.set_caption("player1 hp: {} player2 hp: {} b1: {}".format(
-                                 self.player1.hitpoints, self.player2.hitpoints, self.b1))
-            
             
             milliseconds = self.clock.tick(self.fps) #
             seconds = milliseconds / 1000
@@ -1523,7 +1520,8 @@ class Viewer(object):
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
             
-            t = "e1: {} e2: {} e3: {}".format(self.e1, self.e2, self.e3)
+            t = "e1: {} e2: {} e3: {} player1 hp: {} player2 hp: {} b1: {}".format(
+                                  self.e1, self.e2, self.e3, self.player1.hitpoints, self.player2.hitpoints, self.b1)
             write(self.screen, t, 50, 10, color=(200,200,200))
             
             
