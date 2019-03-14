@@ -1061,7 +1061,7 @@ class Viewer(object):
         pygame.init()
         Viewer.width = width    # make global readable
         Viewer.height = height
-        li = []
+        li = ["back"]
         for i in pygame.display.list_modes():
             # li is something like "(800, 600)"
             pair = str(i)
@@ -1135,7 +1135,7 @@ class Viewer(object):
                 self.e2 = 0
         elif name == "Enemy3":
             self.e3 -= 1
-            if self.e3 > 0:
+            if self.e3 < 0:
                 self.e3 = 0
         elif name == "Boss1":
             self.b1 -= 3
