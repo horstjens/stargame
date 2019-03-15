@@ -601,7 +601,7 @@ class Enemy3(Enemy1):
     
      def kill(self):
          Explosion(posvector = self.pos, red = 205,blue= 0,green= 0,red_delta= 50,blue_delta=0,maxsparks=200)
-         #Viewer.explosionsound.play()
+         Viewer.explosionsound.play()
          VectorSprite.kill(self)
         
 class Boss1(VectorSprite):
@@ -628,7 +628,6 @@ class Boss1(VectorSprite):
         VectorSprite.update(self,seconds)
         self.damage = 1- self.hitpoints / self.hitpointsfull
         self.fire()
-        #print("bossdamage:", self.damage)
         if self.pos.y > 0:
             self.image = Viewer.images["Boss_immortal"]
         else:
@@ -676,7 +675,86 @@ class Boss1(VectorSprite):
                                    kill_on_edge=False,survive_north = True, color=self.color)
     
 
+class Boss2(Boss1):
+    def _overwrite_parameters(self):
+        self.maxhp = 15000
+        self.hitpoints = self.maxhp
+        self.hitpointsfull = self.maxhp
+    
+    def create_image(self):
+        self.image = Viewer.images["Boss2"]
+        self.image0 = self.image.copy()
+        self.rect = self.image.get_rect()
+
+    
+    
+    def update(self):
+        VectorSprite.update(self,seconds)
+        self.damage = 1- self.hitpoints / self.hitpointsfull
+        self.fire()
+        if self.pos.y > 0:
+            self.image = Viewer.images["Boss_immortal"]
+        else:
+            self.image = Viewer.images["Boss2"]
+        # the boss move
+        if self.pos.y > -200:
+            self.move = pygame.math.Vector2(0,-7.5)
+        else:
+            dx = 0
+            if random.random() < 0.01:
+                dx = random.choice((-7,-3,0,3,7))
+                self.move = pygame.math.Vector2(dx,0)
+        if self.pos.x < 200:
+            self.pos.x = 200
+        if self.pos.x > Viewer.width -200:
+            self.pos.x = Viewer.width -200
+    
+    
+    
+    
+    def fire(self):
+        pass
         
+class Boss3(Boss1):
+    def _overwrite_parameters(self):
+        self.maxhp = 20000
+        self.hitpoints = self.maxhp
+        self.hitpointsfull = self.maxhp
+    
+    def create_image(self):
+        self.image = Viewer.images["Boss3"]
+        self.image0 = self.image.copy()
+        self.rect = self.image.get_rect()
+
+    
+    
+    def update(self):
+        VectorSprite.update(self,seconds)
+        self.damage = 1- self.hitpoints / self.hitpointsfull
+        self.fire()
+        if self.pos.y > 0:
+            self.image = Viewer.images["Boss_immortal"]
+        else:
+            self.image = Viewer.images["Boss3"]
+        # the boss move
+        if self.pos.y > -200:
+            self.move = pygame.math.Vector2(0,-7.5)
+        else:
+            dx = 0
+            if random.random() < 0.01:
+                dx = random.choice((-7,-3,0,3,7))
+                self.move = pygame.math.Vector2(dx,0)
+        if self.pos.x < 200:
+            self.pos.x = 200
+        if self.pos.x > Viewer.width -200:
+            self.pos.x = Viewer.width -200
+    
+    
+    
+    
+    def fire(self):
+        pass        
+
 class Star(VectorSprite):
     
     def _overwrite_parameters(self):
@@ -1051,11 +1129,10 @@ class Viewer(object):
     images = {}
     menu =  {"main":            ["resume", "settings", "credits", "quit" ],
             #main
-            "settings":        ["back", "video", "audio", "difficulty", "reset all values"],
+            "settings":        ["back", "video", "difficulty", "reset all values"],
             #settings
             "difficulty":      ["back", "powerups", "bosshealth", "playerhealth"],
-            "audio":           ["back", "volume", "soundeffects"],
-            "video":           ["back", "resolution", "fullscreen", "fpslock"],
+            "video":           ["back", "resolution", "fullscreen"],
             #difficulty
             "bosshealth":      ["back", "1000", "2500", "5000", "10000"],
             "playerhealth":    ["back", "100", "250", "500", "1000"],
@@ -1078,11 +1155,7 @@ class Viewer(object):
             "speed duration":  ["back", "10", "30", "60"],
             #video
             "resolution":      ["back", "720p", "1080p", "1440p", "4k"],
-            "fullscreen":      ["back", "true", "false"],
-            "fpslock":         ["back", "30fps", "60fps", "90fps", "120fps", "144fps"],
-            #audio    
-            "volume":          ["back", "low", "medium", "high"],
-            "soundeffects":    ["back", "true", "false"]                                   
+            "fullscreen":      ["back", "true", "false"]
             }
     
     
@@ -1153,7 +1226,6 @@ class Viewer(object):
         self.laserduration = 10
         self.speedduration = 15
         self.shieldduration = 15
-        
        
     def set_resolution(self):
         if Viewer.fullscreen:
@@ -1178,9 +1250,13 @@ class Viewer(object):
                 self.e3 = 0
         elif name == "Boss1":
             self.b1 -= 3
+        # boss spawning start
         if self.level == 1 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
             self.b1 += 1
-        if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0:
+        if self.level == 6 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b2 == 0:
+            self.b2 += 1
+        # bossspawning end
+        if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0 and self.b2 <= 0 and self.b3 <= 0:
             self.new_level()
     
     def new_level(self):
@@ -1189,6 +1265,8 @@ class Viewer(object):
         self.e2 = self.level * 1
         self.e3 = self.level * 1
         self.b1 = 0
+        self.b2 = 0
+        self.b3 = 0
         x = Viewer.width // 2
         y = Viewer.height // 2
         t = "Level {}. You have to kill: {} ships, {} big ships, {} planets.".format(
@@ -1210,8 +1288,13 @@ class Viewer(object):
         # music
         pygame.mixer.music.load(os.path.join("data", "stargame_bossbattle1.ogg"))
         # sound effects
-        #Viewer.explosionsound = pygame.mixer.Sound(os.path.join("data", "stargame_Explosion.wav"))
-        
+        Viewer.explosionsound = pygame.mixer.Sound(os.path.join("data", "stargame_Explosion.wav"))
+        Viewer.bulletsound = pygame.mixer.Sound(os.path.join("data", "stargame_bullet.wav"))
+        Viewer.powerupsound = pygame.mixer.Sound(os.path.join("data", "stargame_powerup.wav"))
+        Viewer.menusound = pygame.mixer.Sound(os.path.join("data", "stargame_menusound.wav"))
+        Viewer.lasersound = pygame.mixer.Sound(os.path.join("data", "stargame_lasersound.wav"))
+        Viewer.menuselectsound = pygame.mixer.Sound(os.path.join("data", "stargame_menuselect.wav"))
+        Viewer.menucommandsound = pygame.mixer.Sound(os.path.join("data", "stargame_menucommand.wav"))
     
     def load_sprites(self):
         Viewer.images["player1"]= pygame.image.load(
@@ -1330,16 +1413,18 @@ class Viewer(object):
         Engine_glow(bossnumber = self.player1.number, sticky_with_boss=True, angle = self.player1.angle+180)
         Engine_glow(bossnumber = self.player2.number, sticky_with_boss=True, angle = self.player2.angle+180)
         
-   
-   
+        
+        
+    
     def menurun(self):
         running = True
         pygame.mouse.set_visible(False)
         while running:
-          
+            
+            #pygame.mixer.music.pause()
             milliseconds = self.clock.tick(self.fps) #
             seconds = milliseconds / 1000
-          
+            
             # -------- events ------
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1351,97 +1436,134 @@ class Viewer(object):
                     if event.key == pygame.K_UP:
                         Viewer.cursor -= 1
                         Viewer.cursor = max(0, Viewer.cursor) # not < 0
+                        Viewer.menusound.play()
                     if event.key == pygame.K_DOWN:
                         Viewer.cursor += 1
                         Viewer.cursor = min(len(Viewer.menu[Viewer.name])-1,Viewer.cursor) # not > menu entries
+                        Viewer.menusound.play()
                     if event.key == pygame.K_RETURN:
                         text = Viewer.menu[Viewer.name][Viewer.cursor]
                         if text == "quit":
                             return -1
-                        elif text == "resume":
-                            return
-                        elif text == "back":
-                            Viewer.history = Viewer.history[:-1] # remove last entry
-                            Viewer.cursor = 0
-                            Viewer.name = Viewer.history[-1] # get last entry
+                            Viewer.menucommandsound.play()
                         elif text in Viewer.menu:
                             # changing to another menu
                             Viewer.history.append(text) 
                             Viewer.name = text
                             Viewer.cursor = 0
-                        # direct action
+                            Viewer.menuselectsound.play()
+                        elif text == "resume":
+                            return
+                            Viewer.menucommandsound.play()
+                            #pygame.mixer.music.unpause()
+                        elif text == "back":
+                            Viewer.history = Viewer.history[:-1] # remove last entry
+                            Viewer.cursor = 0
+                            Viewer.name = Viewer.history[-1] # get last entry
+                            Viewer.menucommandsound.play()
+                            # direct action
                         elif text == "credits":
                             Flytext(700, 400, "by mobdullah", fontsize = 100)  
                         if Viewer.name == "bossrocket increase":
                             if text == "1":
                                 self.bonusrocketincrease = 1
+                                Viewer.menucommandsound.play()
                             elif text == "2":
                                 self.bonusrocketincrease = 2
+                                Viewer.menucommandsound.play()
                             elif text == "3":
                                 self.bonusrocketincrease = 3
+                                Viewer.menucommandsound.play()
                             elif text == "5":
                                 self.bonusrocketincrease = 5
+                                Viewer.menucommandsound.play()
                             elif text == "10":
                                 self.bonusrocketincrease = 10
+                                Viewer.menucommandsound.play()
                         if Viewer.name == "bonusrocket duration":
                             if text == "10":
                                 self.bonusrocketduration = 10
+                                Viewer.menucommandsound.play()
                             elif text == "30":
                                 self.bonusrocketduration = 30
+                                Viewer.menucommandsound.play()
                             elif text == "60":
                                 self.bonusrocketduration = 60
+                                Viewer.menucommandsound.play()
                         if Viewer.name == "laserdamage":
                             if text == "3":
+                                Viewer.menucommandsound.play()
                                 self.laserdamage = 3
                             elif text == "5":
+                                Viewer.menucommandsound.play()
                                 self.laserdamage = 5
                             elif text == "10":
+                                Viewer.menucommandsound.play()
                                 self.laserdamage = 10
                         if Viewer.name == "laser duration":
                             if text == "10":
                                 self.laserduration = 10
+                                Viewer.menucommandsound.play()
                             elif text == "30":
                                 self.laserduration = 30
+                                Viewer.menucommandsound.play()
                             elif text == "60":
+                                Viewer.menucommandsound.play()
                                 self.laserduration = 60
                         if Viewer.name == "heal effectiveness":
                             if text == "50":
                                 self.healingeffectivity = 50
+                                Viewer.menucommandsound.play()
                             if text == "100":
                                 self.healingeffectivity = 100
+                                Viewer.menucommandsound.play()
                                 print("heal")
                             if text == "250":
                                 self.healingeffectivity = 250
+                                Viewer.menucommandsound.play()
                                 print("heal")
                             if text == "full health":
                                 self.healingeffectivity = 9999
+                                Viewer.menucommandsound.play()
                         if Viewer.name == "shield duration":
                             if text == "10":
+                                Viewer.menucommandsound.play()
                                 self.shieldduration = 10
                             elif text == "30":
+                                Viewer.menucommandsound.play()
                                 self.shieldduration = 30
                             elif text == "60":
+                                Viewer.menucommandsound.play()
                                 self.shieldduration = 60
                         if Viewer.name == "bossrocket deflection":
                             if text == "true":
+                                Viewer.menucommandsound.play()
                                 self.bossrocketdeflection = True
                             if text == "false":
+                                Viewer.menucommandsound.play()
                                 self.bossrocketdeflection = False
                         if Viewer.name == "speed increase":
                             if text == "3":
+                                Viewer.menucommandsound.play()
                                 self.speedincrease = 3
                             elif text == "5":
+                                Viewer.menucommandsound.play()
                                 self.speedincrease = 5
                             elif text == "10":
+                                Viewer.menucommandsound.play()
                                 self.speedincrease = 10
                             elif text == "15":
+                                Viewer.menucommandsound.play()
                                 self.speedincrease = 15
                         if Viewer.name == "speed duration":
                             if text == "10":
                                 self.speedduration = 10
+                                Viewer.menucommandsound.play()
                             elif text == "30":
                                 self.speedduration = 30
+                                Viewer.menucommandsound.play()
                             elif text == "60":
+                                Viewer.menucommandsound.play()
                                 self.speedduration = 60
                         if Viewer.name == "resolution":
                             # text is something like 800x600
@@ -1454,43 +1576,42 @@ class Viewer(object):
                                 Viewer.width = x
                                 Viewer.height = y
                                 self.set_resolution()
-                                
+                                Viewer.menucommandsound.play()
+                                    
                         if Viewer.name == "fullscreen":
                             if text == "true":
+                                Viewer.menucommandsound.play()
                                 Viewer.fullscreen = True
                                 self.set_resolution()
                             elif text == "false":
+                                Viewer.menucommandsound.play()
                                 Viewer.fullscreen = False
                                 self.set_resolution()
-                        if Viewer.name == "volume":
-                            if text == "low":
-                                pass
-                            elif text == "medium":
-                                pass
-                            elif text == "high":
-                                pass
-                        if Viewer.name == "soundeffects":
-                            if text == "true":
-                                pass
-                            elif text == "false":
-                                pass
                         if Viewer.name == "bosshealth":
                             if text == "1000":
+                                Viewer.menucommandsound.play()
                                 Boss1.maxhp = 1000
                             elif text == "2500":
+                                Viewer.menucommandsound.play()
                                 Boss1.maxhp = 2500
                             elif text == "5000":
+                                Viewer.menucommandsound.play()
                                 Boss1.maxhp = 5000
                             elif text == "10000":
+                                Viewer.menucommandsound.play()
                                 Boss1.myxhp = 10000
                         if Viewer.name == "playerhealth":
                             if text == "100":
+                                Viewer.menucommandsound.play()
                                 self.player1.maxhp = 100
                             elif text == "250":
+                                Viewer.menucommandsound.play()
                                 self.player1.maxhp = 250
                             elif text == "500":
+                                Viewer.menucommandsound.play()
                                 self.player1.maxhp = 500
                             elif text == "1000":
+                                Viewer.menucommandsound.play()
                                 self.player1.maxhp = 1000
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
@@ -1567,10 +1688,11 @@ class Viewer(object):
                     # ------- fire player 1 -----
                     if event.key == pygame.K_TAB:
                         self.player1.fire()
+                        Viewer.bulletsound.play()
                     # ------- fire player 2 ------
                     if event.key == pygame.K_SPACE:
                         self.player2.fire()    
-                    
+                        Viewer.bulletsound.play()
    
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
@@ -1604,10 +1726,18 @@ class Viewer(object):
             # ---------- boss 1 -------------------#
             if self.b1 == 1:
                 Boss1(pos = pygame.math.Vector2(Viewer.width // 2, 250))
-                #pygame.mixer.music.load(os.path.join("data", "stargame_bossbattle1.ogg"))
                 pygame.mixer.music.play()
                 self.b1 += 1
-            
+            # - -- - -- -boss2 - - -  - - - -- - - - #
+            if self.b1 == 2:
+                Boss2(pos = pygame.math.Vector2(Viewer.width // 2, 250))
+                pygame.mixer.music.play()
+                self.b1 += 2
+            # -- - - - - boss3-  - -- - - - - - - - -#
+            if self.b3 == 1:
+                Boss3(pos = pygame.math.Vector2(Viewer.width // 2, 250))
+                pygame.mixer.music.play()
+                self.b3 += 1
             # --------- Powerup ------------
             if random.random() < 0.04:
                 PowerUp()
@@ -1747,7 +1877,8 @@ class Viewer(object):
                         p.laser[p.age+self.laserduration] = 1
                         Explosion(o.pos, red=128, green=0, blue=128)
                         o.kill()
-            
+                        Viewer.lasersound.play()
+                    #Viewer.powerupsound.play()
         
             
             # ----- collision detection between player and Evilrocket -----
@@ -1812,7 +1943,7 @@ class Viewer(object):
                         Explosion(pygame.math.Vector2(r.pos.x, r.pos.y),red=0,green=150,blue=0)
                         r.kill()
                     else:
-                        # --- it's a boss1 ! ------
+                        # --- it's a boss! ------
                         if e.pos.y > 0:
                              break
                         Explosion(posvector = r.pos,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2)
@@ -1821,9 +1952,6 @@ class Viewer(object):
                              pygame.mixer.music.stop()
                              self.killcounter(e)
                         r.kill()
-            
-            
-            
             # ------- collision detection between Laser and Enemy-------
             for l in self.lasergroup:
                 crashgroup = pygame.sprite.spritecollide(l, self.enemygroup,
