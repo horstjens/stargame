@@ -1729,10 +1729,10 @@ class Viewer(object):
                 pygame.mixer.music.play()
                 self.b1 += 1
             # - -- - -- -boss2 - - -  - - - -- - - - #
-            if self.b1 == 2:
+            if self.b2 == 1:
                 Boss2(pos = pygame.math.Vector2(Viewer.width // 2, 250))
                 pygame.mixer.music.play()
-                self.b1 += 2
+                self.b2 += 1
             # -- - - - - boss3-  - -- - - - - - - - -#
             if self.b3 == 1:
                 Boss3(pos = pygame.math.Vector2(Viewer.width // 2, 250))
