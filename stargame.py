@@ -1138,13 +1138,13 @@ class Viewer(object):
             "playerhealth":    ["back", "100", "250", "500", "1000"],
             "powerups":        ["back", "laser", "bonusrockets", "heal", "shield", "speed"],
             #powerups
-            "bonusrockets":    ["back", "bonusrocket increase", "bonusrocket duration"],
+            "bonusrockets":    ["back", "bonusrocketincrease", "bonusrocket duration"],
             "laser":           ["back", "laserdamage", "laser duration"],
             "heal":            ["back", "heal effectiveness"],
             "shield":          ["back", "bossrocket deflection", "shield duration"],
             "speed":           ["back", "speed increase", "speed duration"],
             #powerup effects
-            "bonusrocket increase": ["back", "1", "2", "3", "5", "10"],
+            "bonusrocketincrease": ["back", "1", "2", "3", "5", "10"],
             "bonusrocket duration": ["back", "10", "30", "60"],
             "laserdamage":     ["back", "3", "5", "10"],
             "laser duration": ["back", "10", "30", "60"],            
@@ -1250,10 +1250,16 @@ class Viewer(object):
                 self.e3 = 0
         elif name == "Boss1":
             self.b1 -= 3
+        elif name == "Boss2":
+            self.b2 -= 3
+        elif name == "Boss3":
+            self.b3 -= 3
         # boss spawning start
-        if self.level == 1 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
+        if self.level == 1  and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
             self.b1 += 1
         if self.level == 6 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b2 == 0:
+            self.b2 += 1
+        if self.level == 9 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b3 == 0:
             self.b2 += 1
         # bossspawning end
         if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0 and self.b2 <= 0 and self.b3 <= 0:
@@ -1262,8 +1268,8 @@ class Viewer(object):
     def new_level(self):
         self.level += 1
         self.e1 = self.level * 1
-        self.e2 = self.level * 1
-        self.e3 = self.level * 1
+        self.e2 = self.level * 0
+        self.e3 = self.level * 0
         self.b1 = 0
         self.b2 = 0
         self.b3 = 0
@@ -1464,7 +1470,7 @@ class Viewer(object):
                             # direct action
                         elif text == "credits":
                             Flytext(700, 400, "by mobdullah", fontsize = 100)  
-                        if Viewer.name == "bossrocket increase":
+                        if Viewer.name == "bonusrocketincrease":
                             if text == "1":
                                 self.bonusrocketincrease = 1
                                 Viewer.menucommandsound.play()
@@ -1858,22 +1864,22 @@ class Viewer(object):
                         Explosion(o.pos, red=255, green=0, blue=0)
                         o.kill()
                     elif o.color == (0,255,0):
-                        Flytext(o.pos.x, - o.pos.y, "turbo active")
+                        Flytext(o.pos.x, - o.pos.y, "turbo active for {} seconds".format(self.speedduration))
                         p.bonusspeed[p.age+self.speedduration] = self.speedincrease
                         Explosion(o.pos, red=0, green=255, blue=0)
                         o.kill()
                     elif o.color == (0,0,255):
-                        Flytext(o.pos.x, -o.pos.y, "Bonusrockets aquired")
+                        Flytext(o.pos.x, -o.pos.y, "{} extra rockets for {} seconds".format(self.bonusrocketincrease, self.bonusrocketduration))
                         p.bonusrockets[p.age+self.bonusrocketduration] = self.bonusrocketincrease
                         Explosion(o.pos, red=0, green=0, blue=255)
                         o.kill()
                     elif o.color == (255,255,255):
-                        Flytext(o.pos.x, -o.pos.y, "shield activated")
+                        Flytext(o.pos.x, -o.pos.y, "shield activated for {} seconds, bossrocket deflection is {}".format(self.shieldduration, self.bossrocketdeflection))
                         p.shield[p.age+10] = 20
                         Explosion(o.pos, red=255, green=255, blue=255)
                         o.kill()
                     elif o.color == (128,0,128):
-                        Flytext(o.pos.x, -o.pos.y, " laser activated")
+                        Flytext(o.pos.x, -o.pos.y, " laser activated for {} seconds".format(self.laserduration))
                         p.laser[p.age+self.laserduration] = 1
                         Explosion(o.pos, red=128, green=0, blue=128)
                         o.kill()
