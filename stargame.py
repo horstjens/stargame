@@ -693,8 +693,8 @@ class Boss2(Boss1):
     
     def fire(self):
         """shoot a salvo towards a player"""
-        if random.random() < 0.009:
-            for a in range(190, 351, 13):
+        if random.random() < 0.006:
+            for a in range(190, 351, random.randint(10,15)):
                 v = pygame.math.Vector2(25+self.damage*10,0)   # here modify guys
                 v.rotate_ip(a)
                 Bossrocket(pos=pygame.math.Vector2(self.pos.x,
