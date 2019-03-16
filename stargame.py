@@ -1394,8 +1394,8 @@ class Viewer(object):
         self.player1 =  Player(imagename="player1", warp_on_edge=True, pos=pygame.math.Vector2(Viewer.width/2-100,-Viewer.height/2))
         self.player2 =  Player(imagename="player2", angle=180,warp_on_edge=True, pos=pygame.math.Vector2(Viewer.width/2+100,-Viewer.height/2))
    
-        Engine_glow(bossnumber = self.player1.number, sticky_with_boss=True, angle = self.player1.angle+180)
-        Engine_glow(bossnumber = self.player2.number, sticky_with_boss=True, angle = self.player2.angle+180)
+        Engine_glow(bossnumber = self.player1.number, sticky_with_boss=True,kill_with_boss, angle = self.player1.angle+180)
+        Engine_glow(bossnumber = self.player2.number, sticky_with_boss=True,kill_with_boss, angle = self.player2.angle+180)
         
         
         
