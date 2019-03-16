@@ -616,6 +616,10 @@ class Boss1(VectorSprite):
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
         self.normalimage = Viewer.images["Boss1"]
         self.immortalimage = Viewer.images["Boss_immortal"]
+        self.cannons = [pygame.math.Vector2(-190,0),
+                       pygame.math.Vector2(190,0)]
+            
+        
         
     def create_image(self):
         self.image = self.normalimage
@@ -653,8 +657,6 @@ class Boss1(VectorSprite):
     def fire(self):
         """shoot a salvo towards a player"""
         if random.random() < 0.005:
-            cannons = [pygame.math.Vector2(-190,0),
-                       pygame.math.Vector2(190,0)]
             targets = []
             for player in [0,1]:
                 if player in VectorSprite.numbers:
@@ -663,7 +665,7 @@ class Boss1(VectorSprite):
                 return
             t = random.choice(targets)
             rightvector = pygame.math.Vector2(10,0)
-            for d in cannons:   
+            for d in self.cannons:   
                 diffvector = t.pos  - (self.pos + d)
                 a = rightvector.angle_to(diffvector)
                 #speeds = [100,120,140,160,180,200,220,240]
@@ -683,7 +685,7 @@ class Boss2(Boss1):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.maxhp = 10000
+        self.maxhp = 10
         self.hitpoints = self.maxhp
         self.hitpointsfull = self.maxhp
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
@@ -707,9 +709,12 @@ class Boss2(Boss1):
     
 class Boss3(Boss1):
     def _overwrite_parameters(self):
-        self.maxhp = 20000
+        self.maxhp = 10000
         self.hitpoints = self.maxhp
         self.hitpointsfull = self.maxhp
+        self.cannons = [pygame.math.Vector2(-190,0),
+                       pygame.math.Vector2(190,0)]
+            
     
     def create_image(self):
         self.image = Viewer.images["Boss3"]
@@ -739,12 +744,17 @@ class Boss3(Boss1):
         if self.pos.x > Viewer.width -200:
             self.pos.x = Viewer.width -200
     
-    
-    
-    
     def fire(self):
-        pass        
-
+        """shoot a salvo towards a player"""
+        if random.random() < 0.001:
+            for c in self.cannons:
+                for a in range(190, 351, random.randint(18,25)):
+                    v = pygame.math.Vector2(25+self.damage*10,0)   # here modify guys
+                    v.rotate_ip(a)
+                    p = self.pos + c
+                    Bossrocket(pos=p, angle=a+0,
+                                   move=v+self.move, max_age=30,
+                                   kill_on_edge=False,survive_north = True, color=self.color)
 class Star(VectorSprite):
     
     def _overwrite_parameters(self):
