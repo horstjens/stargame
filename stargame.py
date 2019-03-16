@@ -468,9 +468,9 @@ class PowerUp(VectorSprite):
         elif self.color == (255,255,255):
             self.image = Viewer.images["powerup_shield"] 
         elif self.color == (0,255,0):
-            self.image = Viewer.images["powerup_speed"] 
+            self.image = Viewer.images["power_up_speed"] 
         elif self.color == (128,0,128):
-            self.image = Viewer.images["powerup_laser"]
+            self.image = Viewer.images["power_up_laser"]
             
         self.image.set_colorkey((0,0,0))
         self.image.convert_alpha()
@@ -1323,17 +1323,15 @@ class Viewer(object):
                  os.path.join("data", "planet.png")).convert_alpha()
         Viewer.images["EVIL_rocket"]=pygame.image.load(
                  os.path.join("data", "evil_rocket.png")).convert_alpha()
-        Viewer.images["powerup_laser"]=pygame.image.load(
+        Viewer.images["power_up_laser"]=pygame.image.load(
                  os.path.join("data", "powerup_laser.png")).convert_alpha()
         Viewer.images["powerup_damage"]=pygame.image.load(
                  os.path.join("data", "powerup_damage.png")).convert_alpha()
         Viewer.images["powerup_heal"]=pygame.image.load(
                  os.path.join("data", "powerup_heal.png")).convert_alpha()
-        Viewer.images["powerup_fastbullets"]=pygame.image.load(
-                 os.path.join("data", "powerup_bullet.png")).convert_alpha()
         Viewer.images["powerup_shield"]=pygame.image.load(
                  os.path.join("data", "powerup_shield.png")).convert_alpha()
-        Viewer.images["powerup_speed"]=pygame.image.load(
+        Viewer.images["power_up_speed"]=pygame.image.load(
                  os.path.join("data", "powerup_speed.png")).convert_alpha()
         Viewer.images["Boss1"]=pygame.image.load(
                  os.path.join("data", "boss_inverted.png")).convert_alpha()
@@ -1376,7 +1374,9 @@ class Viewer(object):
             if "powerup" in name:
                 Viewer.images[name] = pygame.transform.scale(
                                     Viewer.images[name], (75,75))
-            
+            if "power_up" in name:
+                Viewer.images[name] = pygame.transform.scale(
+                                    Viewer.images[name], (68,68))
      
     def prepare_sprites(self):
         """painting on the surface and create sprites"""
