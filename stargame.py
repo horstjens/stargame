@@ -486,7 +486,7 @@ class Enemy1(VectorSprite):
         self.move = pygame.math.Vector2(0,-random.randint(50,100))
         self._layer = 4
         self.angle = 270
-        self.hitpoints = 40
+        self.hitpoints = 30
         
     
     def create_image(self):
@@ -529,7 +529,7 @@ class Enemy2(Enemy1):
                       0,-random.randint(10,25))
         self._layer = 4
         self.angle = 270
-        self.hitpoints = 120
+        self.hitpoints = 60
         
         
     def create_image(self):
@@ -563,7 +563,7 @@ class Enemy3(Enemy1):
                    0,-random.randint(1,5))
         self._layer = 4
         self.angle = 270
-        self.hitpoints = 400
+        self.hitpoints = 180
 
      def update(self,seconds):
         VectorSprite.update(self,seconds)
@@ -682,17 +682,28 @@ class Boss2(Boss1):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.maxhp = 10
+        self.maxhp = 10000
         self.hitpoints = self.maxhp
-        self.hitpointsfull = 15000
+        self.hitpointsfull = self.maxhp
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
         self.normalimage = Viewer.images["Boss2"]
         self.immortalimage = Viewer.images["Boss_immortal"]
-
+        
     
     def fire(self):
-        pass
-        
+        """shoot a salvo towards a player"""
+        if random.random() < 0.009:
+            for a in range(190, 351, 13):
+                v = pygame.math.Vector2(25+self.damage*10,0)   # here modify guys
+                v.rotate_ip(a)
+                Bossrocket(pos=pygame.math.Vector2(self.pos.x,
+                                   self.pos.y), angle=a+0,
+                                   move=v+self.move, max_age=30,
+                                   kill_on_edge=False,survive_north = True, color=self.color)
+    
+    
+    
+    
 class Boss3(Boss1):
     def _overwrite_parameters(self):
         self.maxhp = 20000
@@ -1394,8 +1405,8 @@ class Viewer(object):
         self.player1 =  Player(imagename="player1", warp_on_edge=True, pos=pygame.math.Vector2(Viewer.width/2-100,-Viewer.height/2))
         self.player2 =  Player(imagename="player2", angle=180,warp_on_edge=True, pos=pygame.math.Vector2(Viewer.width/2+100,-Viewer.height/2))
    
-        Engine_glow(bossnumber = self.player1.number, sticky_with_boss=True,kill_with_boss, angle = self.player1.angle+180)
-        Engine_glow(bossnumber = self.player2.number, sticky_with_boss=True,kill_with_boss, angle = self.player2.angle+180)
+        Engine_glow(bossnumber = self.player1.number, kill_with_boss = True, sticky_with_boss=True, angle = self.player1.angle+180)
+        Engine_glow(bossnumber = self.player2.number, kill_with_boss = True, sticky_with_boss=True, angle = self.player2.angle+180)
         
         
         
@@ -1962,7 +1973,7 @@ class Viewer(object):
                              error = True
                          if not error:
                              Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2, minangle=190, maxangle=350  )
-                             e.hitpoints -= self.laserdamage *2
+                             e.hitpoints -= self.laserdamage 
                              if e.hitpoints <= 0:
                                 pygame.mixer.music.stop()
                                 self.killcounter(e)
