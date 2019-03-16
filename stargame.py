@@ -434,7 +434,8 @@ class PowerUp(VectorSprite):
     def _overwrite_parameters(self):
         self.pos = pygame.math.Vector2(random.randint(
                    0, Viewer.width) , -1)
-        self.kill_on_edge = True
+        self.kill_on_edge = False
+        self.warp_on_edge = True
         self.move = pygame.math.Vector2(
                         random.randint(-20,20),
                        -random.randint(50,175))
@@ -1215,7 +1216,8 @@ class Viewer(object):
         self.laserduration = 10
         self.speedduration = 15
         self.shieldduration = 15
-       
+        # powerup amount 
+        self.powerupamount = 0
     def set_resolution(self):
         if Viewer.fullscreen:
              self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF|pygame.FULLSCREEN)
@@ -1692,8 +1694,8 @@ class Viewer(object):
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
             
-            t = "e1: {} e2: {} e3: {} player1 hp: {} player2 hp: {} b1: {}".format(
-                                  self.e1, self.e2, self.e3, self.player1.hitpoints, self.player2.hitpoints, self.b1)
+            t = "e1: {} e2: {} e3: {} player1 hp: {} player2 hp: {} b1: {} powerupamount = {}".format(
+                                  self.e1, self.e2, self.e3, self.player1.hitpoints, self.player2.hitpoints, self.b1, self.powerupamount)
             write(self.screen, t, 50, 10, color=(200,200,200))
             
             
@@ -1734,8 +1736,11 @@ class Viewer(object):
                 pygame.mixer.music.play()
                 self.b3 += 1
             # --------- Powerup ------------
-            if random.random() < 0.04:
-                PowerUp()
+            if self.powerupamount <= 2:    
+                if random.random() < 0.04:
+                    PowerUp()
+                    self.powerupamount += 1
+                
             
              
 
@@ -1873,7 +1878,7 @@ class Viewer(object):
                         Explosion(o.pos, red=128, green=0, blue=128)
                         o.kill()
                         Viewer.lasersound.play()
-                    #Viewer.powerupsound.play()
+                    self.powerupamount -= 1
         
             
             # ----- collision detection between player and Evilrocket -----
