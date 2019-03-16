@@ -520,7 +520,29 @@ class Enemy1(VectorSprite):
                                    self.pos.y), angle=a+90,
                                    move=v+self.move, max_age=10,
                                    kill_on_edge=True, color=self.color)
+class Enemypeaceful(VectorSprite):
+   
+   
+    def _overwrite_parameters(self):
+        self.survive_north = True
+        self.kill_on_edge = False
+        self.move = pygame.math.Vector2(0,-60)
+        self.pos.x = Viewer.width // 2
+        self.pos.y = 100
+        self.flytextnumber = 0
+        
+    def update(self, seconds):
+        VectorSprite.update(self,seconds)
+        if self.pos.y <  -Viewer.height // 2:
+            Flytext(700, 400,  "you have won!, The Evil Scientist spaceshippo has given up! Farewell", fontsize = 75)
     
+    def create_image(self):
+        self.image = Viewer.images["enemy1"]
+        self.image0 = self.image.copy()
+        self.rect = self.image.get_rect()
+        self.set_angle(-90)
+        
+        
 class Enemy2(Enemy1):
     """big enemy spaceship"""
     def _overwrite_parameters(self):
@@ -612,7 +634,7 @@ class Boss1(VectorSprite):
         self.survive_north = True
         self.maxhp = 10
         self.hitpoints = self.maxhp
-        self.hitpointsfull = 10000
+        self.hitpointsfull = 7000
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
         self.normalimage = Viewer.images["Boss1"]
         self.immortalimage = Viewer.images["Boss_immortal"]
@@ -685,7 +707,7 @@ class Boss2(Boss1):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.maxhp = 10
+        self.maxhp = 7000
         self.hitpoints = self.maxhp
         self.hitpointsfull = self.maxhp
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
@@ -709,7 +731,7 @@ class Boss2(Boss1):
     
 class Boss3(Boss1):
     def _overwrite_parameters(self):
-        self.maxhp = 10000
+        self.maxhp = 7000
         self.hitpoints = self.maxhp
         self.hitpointsfull = self.maxhp
         self.cannons = [pygame.math.Vector2(-190,0),
@@ -1256,24 +1278,29 @@ class Viewer(object):
         elif name == "Boss3":
             self.b3 -= 3
         # boss spawning start
-        if self.level == 1  and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
+        if self.level == 2  and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
             self.b1 += 1
-        if self.level == 2 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b2 == 0:
+        if self.level == 4 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b2 == 0:
             self.b2 += 1
-        if self.level == 3 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b3 == 0:
+        if self.level == 6 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b3 == 0:
             self.b3 += 1
         # bossspawning end
-        if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0 and self.b2 <= 0 and self.b3 <= 0:
+        if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0 and self.b2 <= 0 and self.b3 <= 0 and self.level < 7:
             self.new_level()
-    
+        if self.level == 7:
+            self.e1 = 0
+            self.e2 = 0
+            self.e3 = 0
+            self.e4 +=1
     def new_level(self):
         self.level += 1
-        self.e1 = self.level * 2
+        self.e1 = self.level * 1
         self.e2 = self.level * 0
         self.e3 = self.level * 0
         self.b1 = 0
         self.b2 = 0
         self.b3 = 0
+        self.e4 = 0
         x = Viewer.width // 2
         y = Viewer.height // 2
         t = "Level {}. You have to kill: {} ships, {} big ships, {} planets.".format(
@@ -1397,9 +1424,11 @@ class Viewer(object):
         self.shieldgroup = pygame.sprite.Group()
         self.lasergroup = pygame.sprite.Group()
         self.flytextgroup = pygame.sprite.Group()
+        self.peacegroup = pygame.sprite.Group()
 
         Mouse.groups = self.allgroup, self.mousegroup, self.tailgroup
         VectorSprite.groups = self.allgroup
+        Enemypeaceful.groups = self.allgroup, self.peacegroup
         Player.groups = self.allgroup, self.playergroup  # , self.tailgroup
         Rocket.groups = self.allgroup, self.rocketgroup
         Omegarocket.groups = self.allgroup, self.omegarocketgroup
@@ -1700,7 +1729,8 @@ class Viewer(object):
                     if event.key == pygame.K_SPACE:
                         self.player2.fire()    
                         Viewer.bulletsound.play()
-   
+                    if event.key == pygame.K_y:
+                        Enemypeaceful()
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
             
@@ -1745,6 +1775,10 @@ class Viewer(object):
                 Boss3(pos = pygame.math.Vector2(Viewer.width // 2, 250))
                 pygame.mixer.music.play()
                 self.b3 += 1
+            # - -- - -  - Victory - - - - - -- - - - -#
+            if self.e4 == 1:
+                Enemypeaceful(pos = (Viewer.width // 2, 100))
+                self.e4 += 1
             # --------- Powerup ------------
             if self.powerupamount <= 2:    
                 if random.random() < 0.04:
