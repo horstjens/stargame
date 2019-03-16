@@ -609,13 +609,15 @@ class Boss1(VectorSprite):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.maxhp = 10000 
+        self.maxhp = 10
         self.hitpoints = self.maxhp
         self.hitpointsfull = 10000
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
+        self.normalimage = Viewer.images["Boss1"]
+        self.immortalimage = Viewer.images["Boss_immortal"]
         
     def create_image(self):
-        self.image = Viewer.images["Boss1"]
+        self.image = self.normalimage
         self.image0 = self.image.copy()
         self.rect = self.image.get_rect()
 
@@ -629,9 +631,9 @@ class Boss1(VectorSprite):
         self.damage = 1- self.hitpoints / self.hitpointsfull
         self.fire()
         if self.pos.y > 0:
-            self.image = Viewer.images["Boss_immortal"]
+            self.image = self.immortalimage
         else:
-            self.image = Viewer.images["Boss1"]
+            self.image = self.normalimage
         # the boss move
         if self.pos.y > -200:
             self.move = pygame.math.Vector2(0,-7.5)
@@ -676,41 +678,17 @@ class Boss1(VectorSprite):
     
 
 class Boss2(Boss1):
+    
     def _overwrite_parameters(self):
-        self.maxhp = 15000
+        self.kill_on_edge = False
+        self.survive_north = True
+        self.maxhp = 10
         self.hitpoints = self.maxhp
-        self.hitpointsfull = self.maxhp
-    
-    def create_image(self):
-        self.image = Viewer.images["Boss2"]
-        self.image0 = self.image.copy()
-        self.rect = self.image.get_rect()
+        self.hitpointsfull = 15000
+        self.speeds = [70,80,90,100,120,140,160,180,200,220]
+        self.normalimage = Viewer.images["Boss2"]
+        self.immortalimage = Viewer.images["Boss_immortal"]
 
-    
-    
-    def update(self):
-        VectorSprite.update(self,seconds)
-        self.damage = 1- self.hitpoints / self.hitpointsfull
-        self.fire()
-        if self.pos.y > 0:
-            self.image = Viewer.images["Boss_immortal"]
-        else:
-            self.image = Viewer.images["Boss2"]
-        # the boss move
-        if self.pos.y > -200:
-            self.move = pygame.math.Vector2(0,-7.5)
-        else:
-            dx = 0
-            if random.random() < 0.01:
-                dx = random.choice((-7,-3,0,3,7))
-                self.move = pygame.math.Vector2(dx,0)
-        if self.pos.x < 200:
-            self.pos.x = 200
-        if self.pos.x > Viewer.width -200:
-            self.pos.x = Viewer.width -200
-    
-    
-    
     
     def fire(self):
         pass
@@ -728,7 +706,7 @@ class Boss3(Boss1):
 
     
     
-    def update(self):
+    def update(self,seconds):
         VectorSprite.update(self,seconds)
         self.damage = 1- self.hitpoints / self.hitpointsfull
         self.fire()
@@ -1257,17 +1235,17 @@ class Viewer(object):
         # boss spawning start
         if self.level == 1  and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
             self.b1 += 1
-        if self.level == 6 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b2 == 0:
+        if self.level == 2 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b2 == 0:
             self.b2 += 1
-        if self.level == 9 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b3 == 0:
-            self.b2 += 1
+        if self.level == 3 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b3 == 0:
+            self.b3 += 1
         # bossspawning end
         if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0 and self.b2 <= 0 and self.b3 <= 0:
             self.new_level()
     
     def new_level(self):
         self.level += 1
-        self.e1 = self.level * 1
+        self.e1 = self.level * 2
         self.e2 = self.level * 0
         self.e3 = self.level * 0
         self.b1 = 0
@@ -1963,9 +1941,9 @@ class Viewer(object):
                 crashgroup = pygame.sprite.spritecollide(l, self.enemygroup,
                              False, pygame.sprite.collide_mask)
                 for e in crashgroup:
-                     if e.__class__.__name__ != "Boss1":
+                     if "Boss" not in e.__class__.__name__: # != "Boss1":
                          Explosion(posvector = e.pos,red = 100,minsparks = 1,maxsparks = 2)
-                         e.hitpoints -= self.laserdamage
+                         e.hitpoints -= self.laserdamage 
                          if e.hitpoints <= 0:
                              self.killcounter(e)
                      else:
@@ -1984,7 +1962,7 @@ class Viewer(object):
                              error = True
                          if not error:
                              Explosion(posvector = iv,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2, minangle=190, maxangle=350  )
-                             e.hitpoints -= self.laserdamage
+                             e.hitpoints -= self.laserdamage *2
                              if e.hitpoints <= 0:
                                 pygame.mixer.music.stop()
                                 self.killcounter(e)
@@ -1996,7 +1974,7 @@ class Viewer(object):
                              False, pygame.sprite.collide_mask)
                              
                 for e in crashgroup:
-                    e.hitpoints -= 10 
+                    e.hitpoints -= 5 
                     p.hitpoints -= 1
                     
                     
@@ -2012,8 +1990,8 @@ class Viewer(object):
                 crashgroup = pygame.sprite.spritecollide(e, self.rocketgroup,
                              False, pygame.sprite.collide_mask)
                 for r in crashgroup:
-                    if e.__class__.__name__ != "Boss1":
-                        e.hitpoints -= random.randint(4,9)
+                    if  "Boss" not in e.__class__.__name__: #  != "Boss1":
+                        e.hitpoints -= 10
                         if e.hitpoints <= 0:
                             self.player1.hitpoints += 15
                             self.player2.hitpoints += 15
@@ -2029,7 +2007,7 @@ class Viewer(object):
                         if e.pos.y > 0:
                              break
                         Explosion(posvector = r.pos,blue=200, red=0, green=0,minsparks = 1,maxsparks = 2)
-                        e.hitpoints -= 5
+                        e.hitpoints -= 10
                         if e.hitpoints <= 0:
                              pygame.mixer.music.stop()
                              self.killcounter(e)
