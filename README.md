@@ -4,3 +4,6 @@ this is a game about two brothers that have together fought evil since childhood
 
 ![screenshot of game](https://raw.githubusercontent.com/horstjens/stargame/master/data/screen1.png)
 ![screenshot of game](https://github.com/horstjens/stargame/blob/master/data/screen2.png?raw=true)
+
+gameart by: OpenGameArt
+made by: Mobdullah
