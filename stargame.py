@@ -632,7 +632,7 @@ class Boss1(VectorSprite):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.maxhp = 10
+        self.maxhp = 7000
         self.hitpoints = self.maxhp
         self.hitpointsfull = 7000
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
