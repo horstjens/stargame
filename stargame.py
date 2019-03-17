@@ -533,8 +533,8 @@ class Enemypeaceful(VectorSprite):
         
     def update(self, seconds):
         VectorSprite.update(self,seconds)
-        if self.pos.y <  -Viewer.height // 2:
-            Flytext(700, 400,  "you have won!, The Evil Scientist spaceshippo has given up! Farewell", fontsize = 75)
+        if self.pos.y <  -Viewer.height // 2 and self.pos.y > -Viewer.height //2-2:
+            Flytext(Viewer.width // 2, Viewer.height // 2,  "you have won! The Evil Scientist spaceshippo has given up! Farewell", fontsize = 50)
     
     def create_image(self):
         self.image = Viewer.images["enemy1"]
@@ -632,9 +632,9 @@ class Boss1(VectorSprite):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.maxhp = 7000
+        self.maxhp = 10000
         self.hitpoints = self.maxhp
-        self.hitpointsfull = 7000
+        self.hitpointsfull = 10000
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
         self.normalimage = Viewer.images["Boss1"]
         self.immortalimage = Viewer.images["Boss_immortal"]
@@ -707,7 +707,7 @@ class Boss2(Boss1):
     def _overwrite_parameters(self):
         self.kill_on_edge = False
         self.survive_north = True
-        self.maxhp = 7000
+        self.maxhp = Boss1.maxhp
         self.hitpoints = self.maxhp
         self.hitpointsfull = self.maxhp
         self.speeds = [70,80,90,100,120,140,160,180,200,220]
@@ -731,7 +731,7 @@ class Boss2(Boss1):
     
 class Boss3(Boss1):
     def _overwrite_parameters(self):
-        self.maxhp = 7000
+        self.maxhp = Boss1.maxhp
         self.hitpoints = self.maxhp
         self.hitpointsfull = self.maxhp
         self.cannons = [pygame.math.Vector2(-190,0),
@@ -771,7 +771,7 @@ class Boss3(Boss1):
         if random.random() < 0.001:
             for c in self.cannons:
                 for a in range(190, 351, random.randint(18,25)):
-                    v = pygame.math.Vector2(25+self.damage*10,0)   # here modify guys
+                    v = pygame.math.Vector2(25+self.damage*12,0)   # here modify guys
                     v.rotate_ip(a)
                     p = self.pos + c
                     Bossrocket(pos=p, angle=a+0,
@@ -1276,7 +1276,7 @@ class Viewer(object):
         elif name == "Boss2":
             self.b2 -= 3
         elif name == "Boss3":
-            self.b3 -= 3
+            Enemypeaceful()
         # boss spawning start
         if self.level == 2  and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 == 0:
             self.b1 += 1
@@ -1285,13 +1285,8 @@ class Viewer(object):
         if self.level == 6 and self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b3 == 0:
             self.b3 += 1
         # bossspawning end
-        if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0 and self.b2 <= 0 and self.b3 <= 0 and self.level < 7:
+        if self.e1 <= 0 and self.e2 <= 0 and self.e3 <= 0 and self.b1 <= 0 and self.b2 <= 0 and self.b3 <= 0:
             self.new_level()
-        if self.level == 7:
-            self.e1 = 0
-            self.e2 = 0
-            self.e3 = 0
-            self.e4 +=1
     def new_level(self):
         self.level += 1
         self.e1 = self.level * 1
@@ -1777,7 +1772,7 @@ class Viewer(object):
                 self.b3 += 1
             # - -- - -  - Victory - - - - - -- - - - -#
             if self.e4 == 1:
-                Enemypeaceful(pos = (Viewer.width // 2, 100))
+                Enemypeaceful()
                 self.e4 += 1
             # --------- Powerup ------------
             if self.powerupamount <= 2:    
