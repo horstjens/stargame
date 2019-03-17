@@ -1736,8 +1736,9 @@ class Viewer(object):
             # ------delete everything on screen-------
             self.screen.blit(self.background, (0, 0))
             
-            t = "e1: {} e2: {} e3: {} player1 hp: {} player2 hp: {} b1: {} powerupamount = {}".format(
-                                  self.e1, self.e2, self.e3, self.player1.hitpoints, self.player2.hitpoints, self.b1, self.powerupamount)
+            t = "spaceships: {} bigships: {} planets: {} " \
+                "player1 hp: {} player2 hp: {}".format(
+                 self.e1, self.e2, self.e3, self.player1.hitpoints, self.player2.hitpoints)
             write(self.screen, t, 50, 10, color=(200,200,200))
             
             
