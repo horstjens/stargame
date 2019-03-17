@@ -1,5 +1,5 @@
 """
-author: Mohamed und Abdullah
+author: Bigm0 and BakTheBig
 email: moha.alsaby@gmail.com 
 license: gpl, see http://www.gnu.org/licenses/gpl-3.0.de.html
 download: https://github.com/horstjens/stargame/edit/master/stargame.py
@@ -1501,7 +1501,7 @@ class Viewer(object):
                             Viewer.menucommandsound.play()
                             # direct action
                         elif text == "credits":
-                            Flytext(700, 400, "by mobdullah", fontsize = 100)  
+                            Flytext(700, 400, "by Bigm0 and BakTheBig", fontsize = 100)  
                         if Viewer.name == "bonusrocketincrease":
                             if text == "1":
                                 self.bonusrocketincrease = 1
