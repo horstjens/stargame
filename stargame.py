@@ -1296,9 +1296,9 @@ class Viewer(object):
             self.new_level()
     def new_level(self):
         self.level += 1
-        self.e1 = self.level * 1
-        self.e2 = self.level * 0
-        self.e3 = self.level * 0
+        self.e1 = self.level * 5
+        self.e2 = self.level * 3
+        self.e3 = self.level * 1
         self.b1 = 0
         self.b2 = 0
         self.b3 = 0
