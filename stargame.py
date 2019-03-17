@@ -525,16 +525,21 @@ class Enemypeaceful(VectorSprite):
    
     def _overwrite_parameters(self):
         self.survive_north = True
-        self.kill_on_edge = False
-        self.move = pygame.math.Vector2(0,-60)
+        self.kill_on_edge = True
         self.pos.x = Viewer.width // 2
         self.pos.y = 100
-        self.flytextnumber = 0
+        self.time = 25
         
     def update(self, seconds):
         VectorSprite.update(self,seconds)
-        if self.pos.y <  -Viewer.height // 2 and self.pos.y > -Viewer.height //2-2:
-            Flytext(Viewer.width // 2, Viewer.height // 2,  "you have won! The Evil Scientist spaceshippo has given up! Farewell", fontsize = 50)
+        self.move = pygame.math.Vector2(0,-60)
+        if self.pos.y < -Viewer.height // 2:
+            self.move = pygame.math.Vector2(0, -20)
+        if self.pos.y <  -Viewer.height // 2 and self.pos.y > -Viewer.height //2-1:
+            Flytext(Viewer.width // 2, Viewer.height // 2,  "you have won! The Evil Scientist spaceshippo has given up! you have saved the world once again, Farewell.",duration = 5, fontsize = 35)
+            Flytext(Viewer.width // 2, Viewer.height // 2,  "Thank you for playing the game!",duration = 30, delay = 7, fontsize = 35)
+            Flytext(Viewer.width // 2, Viewer.height // 2,  "this game is 2091 lines long and took us months to make.",duration = 30, delay = 10, fontsize = 35)
+            Flytext(Viewer.width // 2, Viewer.height // 2,  "hope you enjoy! Have a nice Day!",duration = 10, delay = 12, fontsize = 35)
     
     def create_image(self):
         self.image = Viewer.images["enemy1"]
@@ -542,7 +547,9 @@ class Enemypeaceful(VectorSprite):
         self.rect = self.image.get_rect()
         self.set_angle(-90)
         
-        
+    def kill(self):
+        VectorSprite.kill(self)
+        quit()    
 class Enemy2(Enemy1):
     """big enemy spaceship"""
     def _overwrite_parameters(self):
