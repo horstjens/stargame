@@ -1,20 +1,20 @@
 # Stargame
 ### The Story
-This is a game about two brothers that have together fought evil since childhood.And now they are trying to save the world from the evil scientist Spaceshippo, who is trying to destroy the world and build a new one made fully of metal.
+STARGAME is a story about two brothers that have travelled the Galaxy and fought evil together since their childhood.
+And now they are trying to save the world, once again. This time from the evil scientist Spaceshippo, who is trying to destroy the world and build a new one, shaped by his vision and made entirely out of metal.Fight the metal! 
 
 The Controls: 
-player 1  W-A-S-D for movement and tab to fire 
+player 1: W-A-S-D for movement, tab to fire. 
+player 2: I-J-K-L for movement, space to fire.
+Escape to open the endgame Menu.
 
-player 2  I-J-K-L for movement and space to fire
-
-Esc to open the ingame Menu
-
-feel free to change the difficulty to your liking
+Feel free to change the difficulty to your liking! 
+Enjoy!
 
 ![screenshot of game](https://raw.githubusercontent.com/horstjens/stargame/master/data/screen1.png)
 ![screenshot of game](https://github.com/horstjens/stargame/blob/master/data/screen2.png?raw=true)
 
-gameart: Some are from OpenGameArt.org and some were created for this project.
-Music and SoundEffects: The Song, Spaceship Explosion Sound and the laser are from  OpenGameArt.org. but the rest are self created.
+Gameart: Some of the art is from OpenGameArt.org another part were created for this project.
+Music and SoundEffects: The Song, "Spaceship Explosion Sound" as well as "The laser" are from  OpenGameArt.org. The rest is self created.
 
 made by: Bigm0 and BakTheBig
